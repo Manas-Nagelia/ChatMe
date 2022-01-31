@@ -3,6 +3,7 @@
 /node_modules
 
 .vscode
+.next
 
 # Yarn (not zero-installs)
 .pnp.*
