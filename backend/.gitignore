@@ -1,3 +1,5 @@
+dist/
+
 # Yarn (not zero-installs)
 .pnp.*
 .yarn/*
