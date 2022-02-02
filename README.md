@@ -1,7 +1,6 @@
 # Chat App
 This is a chat app I'm creating using Next.js!
 # Next.js Instructions:
-![Next.js Logo](https://upload.wikimedia.org/wikipedia/commons/8/8e/Nextjs-logo.svg)
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
