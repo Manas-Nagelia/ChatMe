@@ -5,6 +5,8 @@
 
 .vscode
 
+global.d.ts
+
 # Yarn (not zero-installs)
 .pnp.*
 .yarn/*
