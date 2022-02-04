@@ -21,14 +21,12 @@ const Account = ({ session }: AccountProps) => {
     try {
       setLoading(true);
       const user = supabase.auth.user();
-      console.log(user);
 
       let { data, error, status } = await supabase
         .from("profiles")
         .select(`first_name, last_name, avatar_url`)
         .eq("id", user!.id)
         .single();
-      console.log(data);
 
       if (error && status !== 406) throw error;
 
@@ -67,12 +65,9 @@ const Account = ({ session }: AccountProps) => {
         updated_at: new Date(),
       };
 
-      let { error } = await supabase
-        .from("profiles")
-        .update(updates, {
-          returning: "minimal", // Don't return the value after updating
-        })
-        .eq("id", user!.id);
+      let { error } = await supabase.from("profiles").upsert(updates, {
+        returning: "minimal", // Don't return the value after updating
+      });
 
       if (error) throw error;
     } catch (err) {
