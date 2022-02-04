@@ -1,5 +1,5 @@
 import { Session } from "@supabase/supabase-js";
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabaseClient";
 
 interface AccountProps {
@@ -74,6 +74,10 @@ const Account = ({ session }: AccountProps) => {
       console.log(err);
     } finally {
       setLoading(false);
+      setAlert("Profile updated!");
+      setTimeout(() => {
+        setAlert("");
+      }, 1000);
     }
   };
 
