@@ -91,6 +91,7 @@ const Account = ({ session }: AccountProps) => {
         type="text"
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
+        disabled={loading}
       />
       <label htmlFor="lastName">Last Name:</label>
       <input
@@ -98,6 +99,7 @@ const Account = ({ session }: AccountProps) => {
         type="text"
         value={lastName}
         onChange={(e) => setLastName(e.target.value)}
+        disabled={loading}
       />
       <button
         onClick={() => updateProfile({ firstName, lastName, avatarUrl })}
