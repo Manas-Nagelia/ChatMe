@@ -74,30 +74,29 @@ const Account = ({ session }: AccountProps) => {
 
   return (
     <div>
-      <label htmlFor="email">Email:</label>
-      <input id="email" type="text" value={session.user!.email} disabled />
-      <label htmlFor="firstName">First Name:</label>
-      <input
-        id="firstName"
-        type="text"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        disabled={loading}
-      />
-      <label htmlFor="lastName">Last Name:</label>
-      <input
-        id="lastName"
-        type="text"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        disabled={loading}
-      />
-      <button
-        onClick={() => updateProfile({ firstName, lastName, avatarUrl })}
-        disabled={loading}
-      >
-        {loading ? "Loading..." : "Update"}
-      </button>
+      <form onSubmit={() => updateProfile({ firstName, lastName, avatarUrl })}>
+        <label htmlFor="email">Email:</label>
+        <input id="email" type="text" value={session.user!.email} disabled />
+        <label htmlFor="firstName">First Name:</label>
+        <input
+          id="firstName"
+          type="text"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          disabled={loading}
+        />
+        <label htmlFor="lastName">Last Name:</label>
+        <input
+          id="lastName"
+          type="text"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          disabled={loading}
+        />
+        <button disabled={loading} type="submit">
+          {loading ? "Loading..." : "Update"}
+        </button>
+      </form>
       <p>{!loading && alert}</p>
       <button onClick={() => supabase.auth.signOut()}>Sign out</button>
     </div>
