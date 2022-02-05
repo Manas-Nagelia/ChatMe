@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { AccountProps } from "../interfaces/AccountProps";
 import { UpdateProfile } from "../interfaces/UpdateProfile";
-import checkIfEmpty from "../../../utils/checkIfEmpty";
+import checkIfEmpty from "../../../utils/services/checkIfEmpty";
+import { Profile } from "../interfaces/Profile";
+import upsertData from "../../../utils/services/upsertData";
 
 const Account = ({ session }: AccountProps) => {
   const [loading, setLoading] = useState(true);
@@ -40,19 +42,19 @@ const Account = ({ session }: AccountProps) => {
     }
   };
 
-  const showAlert = (message: string) => {
+  const showAlert = (message: string, seconds: number) => {
     setAlert(message);
 
     setTimeout(() => {
       setAlert("");
-    }, 1500);
+    }, seconds * 1000);
   };
 
   const checkIfFieldsEmpty = () => {
     if (checkIfEmpty(firstName)) {
-      return showAlert("Please fill in your first name");
+      return showAlert("Please fill in your first name", 1.5);
     } else if (checkIfEmpty(lastName)) {
-      return showAlert("Please fill in your last name");
+      return showAlert("Please fill in your last name", 1.5);
     }
   };
 
@@ -67,7 +69,7 @@ const Account = ({ session }: AccountProps) => {
       setLoading(true);
       const user = supabase.auth.user();
 
-      const updates = {
+      const updates: Profile = {
         id: user!.id,
         first_name: firstName,
         last_name: lastName,
@@ -75,19 +77,14 @@ const Account = ({ session }: AccountProps) => {
         updated_at: new Date(),
       };
 
-      let { error } = await supabase.from("profiles").upsert(updates, {
-        returning: "minimal", // Don't return the value after updating
-      });
+      const error = await upsertData("profiles", updates);
 
       if (error) throw error;
     } catch (err) {
       console.log(err);
     } finally {
       setLoading(false);
-      setAlert("Profile updated!");
-      setTimeout(() => {
-        setAlert("");
-      }, 1500);
+      showAlert("Profile updated!", 1.5);
     }
   };
 

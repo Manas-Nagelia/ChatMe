@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { useState, useEffect } from "react";
-import checkIfEmpty from "../../../utils/checkIfEmpty";
+import checkIfEmpty from "../../../utils/services/checkIfEmpty";
 import { supabase } from "../utils/supabaseClient";
 
 const Auth: NextPage = () => {
@@ -21,8 +21,6 @@ const Auth: NextPage = () => {
       setLoading(false);
     }
   };
-
-  // useHandleEnter(handleLogin(email));
 
   return (
     <div>
