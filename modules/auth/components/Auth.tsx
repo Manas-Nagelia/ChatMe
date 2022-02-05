@@ -13,7 +13,8 @@ const Auth: NextPage = () => {
       const { error } = await supabase.auth.signIn({ email });
       if (error) throw error;
       setAlert("Check your email for the login link!");
-    } catch (err) {
+    } catch (err: any) {
+      if (err.status)
       console.log(err);
     } finally {
       setLoading(false);

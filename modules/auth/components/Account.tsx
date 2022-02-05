@@ -1,10 +1,7 @@
-import { Session } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabaseClient";
-
-interface AccountProps {
-  session: Session;
-}
+import { AccountProps } from "../interfaces/AccountProps";
+import { UpdateProfile } from "../interfaces/UpdateProfile";
 
 const Account = ({ session }: AccountProps) => {
   const [loading, setLoading] = useState(true);
@@ -28,7 +25,7 @@ const Account = ({ session }: AccountProps) => {
         .eq("id", user!.id)
         .single();
 
-      if (error && status !== 406) throw error;
+      if (error && status !== 406) console.log(error);
 
       if (data) {
         setFirstName(data.first_name);
@@ -41,12 +38,6 @@ const Account = ({ session }: AccountProps) => {
       setLoading(false);
     }
   };
-
-  interface UpdateProfile {
-    firstName: string;
-    lastName: string;
-    avatarUrl: string;
-  }
 
   const updateProfile = async ({
     firstName,
