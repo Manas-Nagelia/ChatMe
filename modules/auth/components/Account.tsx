@@ -68,7 +68,7 @@ const Account = ({ session }: AccountProps) => {
       setAlert("Profile updated!");
       setTimeout(() => {
         setAlert("");
-      }, 1000);
+      }, 1500);
     }
   };
 
