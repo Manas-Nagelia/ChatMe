@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { AccountProps } from "../interfaces/AccountProps";
 import { UpdateProfile } from "../interfaces/UpdateProfile";
+import checkIfEmpty from "../../../utils/checkIfEmpty";
 
 const Account = ({ session }: AccountProps) => {
   const [loading, setLoading] = useState(true);
@@ -39,11 +40,29 @@ const Account = ({ session }: AccountProps) => {
     }
   };
 
+  const showAlert = (message: string) => {
+    setAlert(message);
+
+    setTimeout(() => {
+      setAlert("");
+    }, 1500);
+  };
+
+  const checkIfFieldsEmpty = () => {
+    if (checkIfEmpty(firstName)) {
+      return showAlert("Please fill in your first name");
+    } else if (checkIfEmpty(lastName)) {
+      return showAlert("Please fill in your last name");
+    }
+  };
+
   const updateProfile = async ({
     firstName,
     lastName,
     avatarUrl,
   }: UpdateProfile) => {
+    checkIfFieldsEmpty();
+
     try {
       setLoading(true);
       const user = supabase.auth.user();

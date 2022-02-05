@@ -1,5 +1,6 @@
 import { NextPage } from "next";
 import { useState, useEffect } from "react";
+import checkIfEmpty from "../../../utils/checkIfEmpty";
 import { supabase } from "../utils/supabaseClient";
 
 const Auth: NextPage = () => {
@@ -14,6 +15,7 @@ const Auth: NextPage = () => {
       if (error) throw error;
       setAlert("Check your email for the login link!");
     } catch (err: any) {
+      if (checkIfEmpty(email)) setAlert("Please provide a valid email address");
       console.log(err);
     } finally {
       setLoading(false);
