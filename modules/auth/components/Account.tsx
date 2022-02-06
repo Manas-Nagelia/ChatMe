@@ -50,21 +50,12 @@ const Account = ({ session }: AccountProps) => {
     }, seconds * 1000);
   };
 
-  const checkIfFieldsEmpty = () => {
-    if (checkIfEmpty(firstName)) {
-      return console.log("First name is empty");
-      return showAlert("Please fill in your first name", 1.5);
-    } else if (checkIfEmpty(lastName)) {
-      return console.log("Last name is empty");
-      return showAlert("Please fill in your last name", 1.5);
-    }
-  };
-
   const updateProfile = async ({
     firstName,
     lastName,
     avatarUrl,
   }: UpdateProfile) => {
+    
     if (checkIfEmpty(firstName)) {
       return showAlert("Please fill in your first name", 1.5);
     } else if (checkIfEmpty(lastName)) {
