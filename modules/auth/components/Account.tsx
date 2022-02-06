@@ -5,8 +5,9 @@ import { UpdateProfile } from "../interfaces/UpdateProfile";
 import checkIfEmpty from "../../../utils/services/checkIfEmpty";
 import { Profile } from "../interfaces/Profile";
 import upsertData from "../../../utils/services/upsertData";
+import { NextPage } from "next";
 
-const Account = ({ session }: AccountProps) => {
+const Account: NextPage<AccountProps> = (props) => {
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -15,7 +16,7 @@ const Account = ({ session }: AccountProps) => {
 
   useEffect(() => {
     getProfile();
-  }, [session]);
+  }, [props.session]);
 
   const getProfile = async () => {
     try {
@@ -89,7 +90,7 @@ const Account = ({ session }: AccountProps) => {
     <div>
       <form onSubmit={() => updateProfile({ firstName, lastName, avatarUrl })}>
         <label htmlFor="email">Email:</label>
-        <input id="email" type="text" value={session.user!.email} disabled />
+        <input id="email" type="text" value={props.session.user!.email} disabled />
         <label htmlFor="firstName">First Name:</label>
         <input
           id="firstName"
