@@ -52,8 +52,10 @@ const Account = ({ session }: AccountProps) => {
 
   const checkIfFieldsEmpty = () => {
     if (checkIfEmpty(firstName)) {
+      return console.log("First name is empty");
       return showAlert("Please fill in your first name", 1.5);
     } else if (checkIfEmpty(lastName)) {
+      return console.log("Last name is empty");
       return showAlert("Please fill in your last name", 1.5);
     }
   };
@@ -63,7 +65,11 @@ const Account = ({ session }: AccountProps) => {
     lastName,
     avatarUrl,
   }: UpdateProfile) => {
-    checkIfFieldsEmpty();
+    if (checkIfEmpty(firstName)) {
+      return showAlert("Please fill in your first name", 1.5);
+    } else if (checkIfEmpty(lastName)) {
+      return showAlert("Please fill in your last name", 1.5);
+    }
 
     try {
       setLoading(true);
@@ -71,8 +77,8 @@ const Account = ({ session }: AccountProps) => {
 
       const updates: Profile = {
         id: user!.id,
-        first_name: firstName,
-        last_name: lastName,
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
         avatar_url: avatarUrl,
         updated_at: new Date(),
       };
