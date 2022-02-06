@@ -8,14 +8,24 @@ const Auth: NextPage = () => {
   const [email, setEmail] = useState("");
   const [alert, setAlert] = useState("");
 
+  const showAlert = (message: string, seconds: number) => {
+    setAlert(message);
+
+    setTimeout(() => {
+      setAlert("");
+    }, seconds * 1000);
+  };
+
   const handleLogin = async (email: string) => {
     try {
       setLoading(true);
       const { error } = await supabase.auth.signIn({ email });
       if (error) throw error;
+      // TODO: Have an option to disclose the message  
       setAlert("Check your email for the login link!");
     } catch (err: any) {
-      if (checkIfEmpty(email)) setAlert("Please provide a valid email address");
+      if (checkIfEmpty(email))
+        showAlert("Please provide a valid email address", 1.25);
       console.log(err);
     } finally {
       setLoading(false);
