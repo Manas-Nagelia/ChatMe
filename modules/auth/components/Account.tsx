@@ -6,6 +6,7 @@ import checkIfEmpty from "../../../utils/services/checkIfEmpty";
 import { Profile } from "../interfaces/Profile";
 import upsertData from "../../../utils/services/upsertData";
 import { NextPage } from "next";
+import removeWhitespace from "../../../utils/services/removeWhitespace";
 
 const Account: NextPage<AccountProps> = (props) => {
   const [loading, setLoading] = useState(true);
@@ -29,12 +30,14 @@ const Account: NextPage<AccountProps> = (props) => {
         .eq("id", user!.id)
         .single();
 
+      const queriedData: Profile = data;
+
       if (error && status !== 406) console.log(error);
 
-      if (data) {
-        setFirstName(data.first_name);
-        setLastName(data.last_name);
-        setAvatarUrl(data.avatar_url);
+      if (queriedData) {
+        setFirstName(removeWhitespace(queriedData.first_name));
+        setLastName(removeWhitespace(queriedData.last_name));
+        setAvatarUrl(removeWhitespace(queriedData.avatar_url));
       }
     } catch (err) {
       console.log(err);
@@ -56,7 +59,6 @@ const Account: NextPage<AccountProps> = (props) => {
     lastName,
     avatarUrl,
   }: UpdateProfile) => {
-    
     if (checkIfEmpty(firstName)) {
       return showAlert("Please fill in your first name", 1.5);
     } else if (checkIfEmpty(lastName)) {
@@ -69,8 +71,8 @@ const Account: NextPage<AccountProps> = (props) => {
 
       const updates: Profile = {
         id: user!.id,
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
+        first_name: removeWhitespace(firstName),
+        last_name: removeWhitespace(lastName),
         avatar_url: avatarUrl,
         updated_at: new Date(),
       };
@@ -90,13 +92,18 @@ const Account: NextPage<AccountProps> = (props) => {
     <div>
       <form onSubmit={() => updateProfile({ firstName, lastName, avatarUrl })}>
         <label htmlFor="email">Email:</label>
-        <input id="email" type="text" value={props.session.user!.email} disabled />
+        <input
+          id="email"
+          type="text"
+          value={removeWhitespace(props.session.user!.email!)}
+          disabled
+        />
         <label htmlFor="firstName">First Name:</label>
         <input
           id="firstName"
           type="text"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
+          value={firstName.trim()}
+          onChange={(e) => setFirstName(removeWhitespace(e.target.value))}
           disabled={loading}
         />
         <label htmlFor="lastName">Last Name:</label>
@@ -104,7 +111,7 @@ const Account: NextPage<AccountProps> = (props) => {
           id="lastName"
           type="text"
           value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
+          onChange={(e) => setLastName(removeWhitespace(e.target.value))}
           disabled={loading}
         />
         <button disabled={loading} type="submit">

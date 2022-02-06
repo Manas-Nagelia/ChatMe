@@ -1,7 +1,8 @@
 import { NextPage } from "next";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import checkIfEmpty from "../../../utils/services/checkIfEmpty";
 import { supabase } from "../utils/supabaseClient";
+import removeWhitespace from "../../../utils/services/removeWhitespace";
 
 const Auth: NextPage = () => {
   const [loading, setLoading] = useState(false);
@@ -42,14 +43,14 @@ const Auth: NextPage = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          handleLogin(email);
+          handleLogin(removeWhitespace(email));
         }}
       >
         <input
           type="email"
           placeholder="Your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={removeWhitespace(email)}
+          onChange={(e) => setEmail(removeWhitespace(e.target.value))}
         />
         <button disabled={loading} type="submit">
           <span>{loading ? "Loading..." : "Send email"}</span>
