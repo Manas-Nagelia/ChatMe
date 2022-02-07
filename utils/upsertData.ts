@@ -1,4 +1,4 @@
-import { supabase } from "../../modules/auth/utils/supabaseClient";
+import { supabase } from "./supabaseClient";
 
 const upsertData = async (table: string, updates: any) => {
   const { error } = await supabase.from(table).upsert(updates, {

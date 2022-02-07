@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { supabase } from "../utils/supabaseClient";
+import { supabase } from "../../../utils/supabaseClient";
 import { AccountProps } from "../interfaces/AccountProps";
 import { UpdateProfile } from "../interfaces/UpdateProfile";
-import checkIfEmpty from "../../../utils/services/checkIfEmpty";
+import checkIfEmpty from "../../../utils/checkIfEmpty";
 import { Profile } from "../interfaces/Profile";
-import upsertData from "../../../utils/services/upsertData";
+import upsertData from "../../../utils/upsertData";
 import { NextPage } from "next";
-import removeWhitespace from "../../../utils/services/removeWhitespace";
+import removeWhitespace from "../../../utils/removeWhitespace";
+import Avatar from "./Avatar";
 
 const Account: NextPage<AccountProps> = (props) => {
   const [loading, setLoading] = useState(true);
@@ -91,6 +92,14 @@ const Account: NextPage<AccountProps> = (props) => {
   return (
     <div>
       <form onSubmit={() => updateProfile({ firstName, lastName, avatarUrl })}>
+        <Avatar
+          url={avatarUrl}
+          size={150}
+          onUpload={(url: string) => {
+            setAvatarUrl(url);
+            updateProfile({ firstName, lastName, avatarUrl: url });
+          }}
+        />
         <label htmlFor="email">Email:</label>
         <input
           id="email"

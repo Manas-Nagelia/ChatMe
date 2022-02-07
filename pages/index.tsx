@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { useState, useEffect } from "react";
-import { supabase } from "../modules/auth/utils/supabaseClient";
+import { supabase } from "../utils/supabaseClient";
 import Auth from "../modules/auth/components/Auth";
 import Account from "../modules/auth/components/Account";
 import { Session } from "@supabase/supabase-js";
