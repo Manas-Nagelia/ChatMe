@@ -72,8 +72,8 @@ const Account: NextPage<AccountProps> = (props) => {
 
       const updates: Profile = {
         id: user!.id,
-        first_name: removeWhitespace(firstName),
-        last_name: removeWhitespace(lastName),
+        first_name: capFirstLetter(removeWhitespace(firstName)),
+        last_name: capFirstLetter(removeWhitespace(lastName)),
         avatar_url: avatarUrl,
         updated_at: new Date(),
       };
@@ -88,6 +88,10 @@ const Account: NextPage<AccountProps> = (props) => {
       showAlert("Profile updated!", 1.5);
     }
   };
+
+  const capFirstLetter = (data: string) => {
+    return data.charAt(0).toUpperCase() + data.slice(1);
+  }
 
   return (
     <div>
@@ -112,7 +116,7 @@ const Account: NextPage<AccountProps> = (props) => {
           id="firstName"
           type="text"
           value={firstName.trim()}
-          onChange={(e) => setFirstName(removeWhitespace(e.target.value))}
+          onChange={(e) => setFirstName(capFirstLetter(removeWhitespace(e.target.value)))}
           disabled={loading}
         />
         <label htmlFor="lastName">Last Name:</label>
@@ -120,7 +124,7 @@ const Account: NextPage<AccountProps> = (props) => {
           id="lastName"
           type="text"
           value={lastName}
-          onChange={(e) => setLastName(removeWhitespace(e.target.value))}
+          onChange={(e) => setLastName(capFirstLetter(removeWhitespace(e.target.value)))}
           disabled={loading}
         />
         <button disabled={loading} type="submit">
