@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import React, { useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../../../utils/supabaseClient";
 import { Avatar } from "../interfaces/Avatar";
 import Image from "next/image";
@@ -10,25 +10,25 @@ const Avatar: NextPage<Avatar> = (props) => {
   const [alert, setAlert] = useState("");
 
   useEffect(() => {
+    const downloadImage = async (path: string) => {
+      try {
+        const { data, error } = await supabase.storage
+          .from("avatars")
+          .download(path);
+
+        if (error) throw error;
+
+        const url = URL.createObjectURL(data!);
+        setAvatarUrl(url);
+      } catch (err: any) {
+        if (err.message === "The resource was not found") {
+          showAlert("Oops, the image was not found.", 1.5);
+        } else console.log("Error downloading image: ", err.message);
+      }
+    };
+
     if (props.url) downloadImage(props.url);
   }, [props.url]);
-
-  const downloadImage = async (path: string) => {
-    try {
-      const { data, error } = await supabase.storage
-        .from("avatars")
-        .download(path);
-
-      if (error) throw error;
-
-      const url = URL.createObjectURL(data!);
-      setAvatarUrl(url);
-    } catch (err: any) {
-      if (err.message === "The resource was not found") {
-        showAlert("Oops, the image was not found.", 1.5);
-      } else console.log("Error downloading image: ", err.message);
-    }
-  };
 
   const showAlert = (message: string, seconds: number) => {
     setAlert(message);
