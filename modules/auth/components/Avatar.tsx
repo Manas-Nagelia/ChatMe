@@ -22,7 +22,7 @@ const Avatar: NextPage<Avatar> = (props) => {
         setAvatarUrl(url);
       } catch (err: any) {
         if (err.message === "The resource was not found") {
-          showAlert("Oops, the image was not found.", 1.5);
+          showAlert("Oops, the image was not found.", 2);
         } else console.log("Error downloading image: ", err.message);
       }
     };
