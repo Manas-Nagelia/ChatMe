@@ -22,7 +22,7 @@ const Auth: NextPage = () => {
       setLoading(true);
       const { error } = await supabase.auth.signIn({ email });
       if (error) throw error;
-      // TODO: Have an option to disclose the message  
+      // TODO: Have an option to disclose the message
       setAlert("Check your email for the login link!");
     } catch (err: any) {
       if (checkIfEmpty(email))
