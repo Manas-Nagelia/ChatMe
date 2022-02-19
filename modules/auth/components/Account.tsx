@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { supabase } from "../../../utils/supabaseClient";
 import { AccountProps } from "../interfaces/AccountProps";
 import { UpdateProfile } from "../interfaces/UpdateProfile";
@@ -55,11 +55,11 @@ const Account: NextPage<AccountProps> = (props) => {
     }, seconds * 1000);
   };
 
-  const updateProfile = async ({
-    firstName,
-    lastName,
-    avatarUrl,
-  }: UpdateProfile) => {
+  const updateProfile = async (
+    { firstName, lastName, avatarUrl }: UpdateProfile,
+    e?: FormEvent<HTMLFormElement>
+  ) => {
+    if (e) e.preventDefault();
     if (checkIfEmpty(firstName)) {
       return showAlert("Please fill in your first name", 1.5);
     } else if (checkIfEmpty(lastName)) {
@@ -91,11 +91,13 @@ const Account: NextPage<AccountProps> = (props) => {
 
   const capFirstLetter = (data: string) => {
     return data.charAt(0).toUpperCase() + data.slice(1);
-  }
+  };
 
   return (
     <div>
-      <form onSubmit={() => updateProfile({ firstName, lastName, avatarUrl })}>
+      <form
+        onSubmit={(e) => updateProfile({ firstName, lastName, avatarUrl }, e)}
+      >
         <Avatar
           url={avatarUrl}
           size={150}
@@ -116,7 +118,9 @@ const Account: NextPage<AccountProps> = (props) => {
           id="firstName"
           type="text"
           value={firstName.trim()}
-          onChange={(e) => setFirstName(capFirstLetter(removeWhitespace(e.target.value)))}
+          onChange={(e) =>
+            setFirstName(capFirstLetter(removeWhitespace(e.target.value)))
+          }
           disabled={loading}
         />
         <label htmlFor="lastName">Last Name:</label>
@@ -124,7 +128,9 @@ const Account: NextPage<AccountProps> = (props) => {
           id="lastName"
           type="text"
           value={lastName}
-          onChange={(e) => setLastName(capFirstLetter(removeWhitespace(e.target.value)))}
+          onChange={(e) =>
+            setLastName(capFirstLetter(removeWhitespace(e.target.value)))
+          }
           disabled={loading}
         />
         <button disabled={loading} type="submit">
