@@ -1,8 +1,8 @@
 import { NextPage } from "next";
 import { useState } from "react";
-import checkIfEmpty from "../../../utils/checkIfEmpty";
-import { supabase } from "../../../utils/supabaseClient";
-import removeWhitespace from "../../../utils/removeWhitespace";
+import checkIfEmpty from "../utils/checkIfEmpty";
+import { supabase } from "../utils/supabaseClient";
+import removeWhitespace from "../utils/removeWhitespace";
 
 const Auth: NextPage = () => {
   const [loading, setLoading] = useState(false);

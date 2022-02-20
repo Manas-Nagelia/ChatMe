@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabaseClient";
-import Auth from "../modules/auth/components/Auth";
+import HomePage from "../components/Home";
 import Account from "../modules/auth/components/Account";
 import { Session } from "@supabase/supabase-js";
 
@@ -16,7 +16,7 @@ const Home: NextPage = () => {
     });
   }, []);
 
-  return <div>{!session ? <Auth /> : <Account key={session.user!.id} session={session} />}</div>;
+  return <div>{!session ? <HomePage /> : <Account key={session.user!.id} session={session} />}</div>;
 };
 
 export default Home;
