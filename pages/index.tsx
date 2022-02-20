@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import HomePage from "../components/Home";
-import Account from "../modules/auth/components/Account";
 import { AccountProps } from "../modules/auth/interfaces/AccountProps";
+import Chats from "../components/chats";
 
 const Home: NextPage<AccountProps> = (props) => {
   return (
@@ -9,7 +9,7 @@ const Home: NextPage<AccountProps> = (props) => {
       {!props.session ? (
         <HomePage />
       ) : (
-        <Account key={props.session.user!.id} session={props.session} />
+        <Chats session={props.session} />
       )}
     </div>
   );

@@ -16,6 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, []);
   
   Object.assign(pageProps, { session });
+  
   return <Component {...pageProps} />;
 }
 

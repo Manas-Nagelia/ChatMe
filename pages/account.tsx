@@ -1,29 +1,31 @@
 import { useState, useEffect, FormEvent } from "react";
-import { supabase } from "../../../utils/db/supabaseClient";
-import { AccountProps } from "../interfaces/AccountProps";
-import { UpdateProfile } from "../interfaces/UpdateProfile";
-import checkIfEmpty from "../../../utils/validation/checkIfEmpty";
-import { Profile } from "../interfaces/Profile";
-import upsertData from "../../../utils/db/upsertData";
+import { supabase } from "../utils/db/supabaseClient";
+import { AccountProps } from "../modules/auth/interfaces/AccountProps";
+import { UpdateProfile } from "../modules/auth/interfaces/UpdateProfile";
+import checkIfEmpty from "../utils/validation/checkIfEmpty";
+import { Profile } from "../modules/auth/interfaces/Profile";
+import upsertData from "../utils/db/upsertData";
 import { NextPage } from "next";
-import removeWhitespace from "../../../utils/validation/removeWhitespace";
-import Avatar from "./Avatar";
+import removeWhitespace from "../utils/validation/removeWhitespace";
+import Avatar from "../modules/auth/components/Avatar";
 
 const Account: NextPage<AccountProps> = (props) => {
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [alert, setAlert] = useState("");
 
   useEffect(() => {
     getProfile();
-  }, [props.session]);
+  }, []);
 
   const getProfile = async () => {
     try {
       setLoading(true);
       const user = supabase.auth.user();
+      setEmail(user!.email!);
 
       let { data, error, status } = await supabase
         .from("profiles")
@@ -110,7 +112,7 @@ const Account: NextPage<AccountProps> = (props) => {
         <input
           id="email"
           type="text"
-          value={removeWhitespace(props.session.user!.email!)}
+          value={email} // session!.user!.email!
           disabled
         />
         <label htmlFor="firstName">First Name:</label>
