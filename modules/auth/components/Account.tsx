@@ -1,10 +1,10 @@
 import { useState, useEffect, FormEvent } from "react";
-import { supabase } from "../../../utils/supabaseClient";
+import { supabase } from "../../../utils/db/supabaseClient";
 import { AccountProps } from "../interfaces/AccountProps";
 import { UpdateProfile } from "../interfaces/UpdateProfile";
 import checkIfEmpty from "../../../utils/checkIfEmpty";
 import { Profile } from "../interfaces/Profile";
-import upsertData from "../../../utils/upsertData";
+import upsertData from "../../../utils/db/upsertData";
 import { NextPage } from "next";
 import removeWhitespace from "../../../utils/removeWhitespace";
 import Avatar from "./Avatar";

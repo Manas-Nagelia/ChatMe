@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import { useState } from "react";
 import checkIfEmpty from "../utils/checkIfEmpty";
-import { supabase } from "../utils/supabaseClient";
+import { supabase } from "../utils/db/supabaseClient";
 import removeWhitespace from "../utils/removeWhitespace";
 
 const Auth: NextPage = () => {
