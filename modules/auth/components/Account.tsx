@@ -2,11 +2,11 @@ import { useState, useEffect, FormEvent } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
 import { AccountProps } from "../interfaces/AccountProps";
 import { UpdateProfile } from "../interfaces/UpdateProfile";
-import checkIfEmpty from "../../../utils/checkIfEmpty";
+import checkIfEmpty from "../../../utils/validation/checkIfEmpty";
 import { Profile } from "../interfaces/Profile";
 import upsertData from "../../../utils/db/upsertData";
 import { NextPage } from "next";
-import removeWhitespace from "../../../utils/removeWhitespace";
+import removeWhitespace from "../../../utils/validation/removeWhitespace";
 import Avatar from "./Avatar";
 
 const Account: NextPage<AccountProps> = (props) => {
