@@ -3,20 +3,18 @@ import { useState, useEffect } from "react";
 import { supabase } from "../utils/db/supabaseClient";
 import HomePage from "../components/Home";
 import Account from "../modules/auth/components/Account";
-import { Session } from "@supabase/supabase-js";
+import { AccountProps } from "../modules/auth/interfaces/AccountProps";
 
-const Home: NextPage = () => {
-  const [session, setSession] = useState<Session | null>(null);
-
-  useEffect(() => {
-    setSession(supabase.auth.session());
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-  }, []);
-
-  return <div>{!session ? <HomePage /> : <Account key={session.user!.id} session={session} />}</div>;
+const Home: NextPage<AccountProps> = (props) => {
+  return (
+    <div>
+      {!props.session ? (
+        <HomePage />
+      ) : (
+        <Account key={props.session.user!.id} session={props.session} />
+      )}
+    </div>
+  );
 };
 
 export default Home;
