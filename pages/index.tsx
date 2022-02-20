@@ -1,6 +1,4 @@
 import type { NextPage } from "next";
-import { useState, useEffect } from "react";
-import { supabase } from "../utils/db/supabaseClient";
 import HomePage from "../components/Home";
 import Account from "../modules/auth/components/Account";
 import { AccountProps } from "../modules/auth/interfaces/AccountProps";
