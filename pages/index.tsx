@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
 import HomePage from "../components/Home";
-import { AccountProps } from "../modules/auth/interfaces/AccountProps";
+import { SessionProps } from "../interfaces/SessionProps";
 import Chats from "../components/chats";
 
-const Home: NextPage<AccountProps> = (props) => {
+const Home: NextPage<SessionProps> = (props) => {
   return (
     <div>
       {!props.session ? (

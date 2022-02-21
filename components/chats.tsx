@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
-import { AccountProps } from "../modules/auth/interfaces/AccountProps";
+import { SessionProps } from "../interfaces/SessionProps";
 
-const Chats: NextPage<AccountProps> = (props) => {
+const Chats: NextPage<SessionProps> = (props) => {
   return (
     <div>
       <h1>Your chats</h1>

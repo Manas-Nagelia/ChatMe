@@ -1,6 +1,6 @@
 import { useState, useEffect, FormEvent } from "react";
 import { supabase } from "../utils/db/supabaseClient";
-import { AccountProps } from "../modules/auth/interfaces/AccountProps";
+import { SessionProps } from "../interfaces/SessionProps";
 import { UpdateProfile } from "../modules/auth/interfaces/UpdateProfile";
 import checkIfEmpty from "../utils/validation/checkIfEmpty";
 import { Profile } from "../modules/auth/interfaces/Profile";
@@ -10,7 +10,7 @@ import removeWhitespace from "../utils/validation/removeWhitespace";
 import Avatar from "../modules/auth/components/Avatar";
 import useRouteGuard from "../utils/guards/useRouteGuard";
 
-const Account: NextPage<AccountProps> = (props) => {
+const Account: NextPage<SessionProps> = (props) => {
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");

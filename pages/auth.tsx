@@ -4,9 +4,9 @@ import checkIfEmpty from "../utils/validation/checkIfEmpty";
 import { supabase } from "../utils/db/supabaseClient";
 import removeWhitespace from "../utils/validation/removeWhitespace";
 import useRouteGuard from "../utils/guards/useRouteGuard";
-import { AccountProps } from "../modules/auth/interfaces/AccountProps";
+import { SessionProps } from "../interfaces/SessionProps";
 
-const Auth: NextPage<AccountProps> = (props) => {
+const Auth: NextPage<SessionProps> = (props) => {
   const redirecting = useRouteGuard(props.session, true);
 
   const [loading, setLoading] = useState(false);
