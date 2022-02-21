@@ -21,7 +21,7 @@ const Account: NextPage<AccountProps> = (props) => {
   const redirecting = useRouteGuard(props.session);
   useEffect(() => {
     if (!redirecting) getProfile();
-  }, []);
+  }, [redirecting]);
 
   const getProfile = async () => {
     try {
