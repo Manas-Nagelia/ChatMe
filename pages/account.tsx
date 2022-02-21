@@ -8,6 +8,7 @@ import upsertData from "../utils/db/upsertData";
 import { NextPage } from "next";
 import removeWhitespace from "../utils/validation/removeWhitespace";
 import Avatar from "../modules/auth/components/Avatar";
+import useRouteGuard from "../utils/guards/useRouteGuard";
 
 const Account: NextPage<AccountProps> = (props) => {
   const [loading, setLoading] = useState(true);
@@ -17,8 +18,9 @@ const Account: NextPage<AccountProps> = (props) => {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [alert, setAlert] = useState("");
 
+  const redirecting = useRouteGuard(props.session);
   useEffect(() => {
-    getProfile();
+    if (!redirecting) getProfile();
   }, []);
 
   const getProfile = async () => {
@@ -95,54 +97,62 @@ const Account: NextPage<AccountProps> = (props) => {
     return data.charAt(0).toUpperCase() + data.slice(1);
   };
 
-  return (
-    <div>
-      <form
-        onSubmit={(e) => updateProfile({ firstName, lastName, avatarUrl }, e)}
-      >
-        <Avatar
-          url={avatarUrl}
-          size={150}
-          onUpload={(url: string) => {
-            setAvatarUrl(url);
-            updateProfile({ firstName, lastName, avatarUrl: url });
-          }}
-        />
-        <label htmlFor="email">Email:</label>
-        <input
-          id="email"
-          type="text"
-          value={email} // session!.user!.email!
-          disabled
-        />
-        <label htmlFor="firstName">First Name:</label>
-        <input
-          id="firstName"
-          type="text"
-          value={firstName.trim()}
-          onChange={(e) =>
-            setFirstName(capFirstLetter(removeWhitespace(e.target.value)))
-          }
-          disabled={loading}
-        />
-        <label htmlFor="lastName">Last Name:</label>
-        <input
-          id="lastName"
-          type="text"
-          value={lastName}
-          onChange={(e) =>
-            setLastName(capFirstLetter(removeWhitespace(e.target.value)))
-          }
-          disabled={loading}
-        />
-        <button disabled={loading} type="submit">
-          {loading ? "Loading..." : "Update"}
-        </button>
-      </form>
-      <p>{!loading && alert}</p>
-      <button onClick={() => supabase.auth.signOut()}>Sign out</button>
-    </div>
-  );
+  if (redirecting)
+    return (
+      <div>
+        <p>Redirecting...</p>
+      </div>
+    );
+  else {
+    return (
+      <div>
+        <form
+          onSubmit={(e) => updateProfile({ firstName, lastName, avatarUrl }, e)}
+        >
+          <Avatar
+            url={avatarUrl}
+            size={150}
+            onUpload={(url: string) => {
+              setAvatarUrl(url);
+              updateProfile({ firstName, lastName, avatarUrl: url });
+            }}
+          />
+          <label htmlFor="email">Email:</label>
+          <input
+            id="email"
+            type="text"
+            value={email} // session!.user!.email!
+            disabled
+          />
+          <label htmlFor="firstName">First Name:</label>
+          <input
+            id="firstName"
+            type="text"
+            value={firstName.trim()}
+            onChange={(e) =>
+              setFirstName(capFirstLetter(removeWhitespace(e.target.value)))
+            }
+            disabled={loading}
+          />
+          <label htmlFor="lastName">Last Name:</label>
+          <input
+            id="lastName"
+            type="text"
+            value={lastName}
+            onChange={(e) =>
+              setLastName(capFirstLetter(removeWhitespace(e.target.value)))
+            }
+            disabled={loading}
+          />
+          <button disabled={loading} type="submit">
+            {loading ? "Loading..." : "Update"}
+          </button>
+        </form>
+        <p>{!loading && alert}</p>
+        <button onClick={() => supabase.auth.signOut()}>Sign out</button>
+      </div>
+    );
+  }
 };
 
 export default Account;
