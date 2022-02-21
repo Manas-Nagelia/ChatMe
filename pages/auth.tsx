@@ -5,6 +5,7 @@ import { supabase } from "../utils/db/supabaseClient";
 import removeWhitespace from "../utils/validation/removeWhitespace";
 import useRouteGuard from "../utils/guards/useRouteGuard";
 import { SessionProps } from "../interfaces/SessionProps";
+import Redirecting from "../components/Redirecting";
 
 const Auth: NextPage<SessionProps> = (props) => {
   const redirecting = useRouteGuard(props.session, true);
@@ -37,12 +38,7 @@ const Auth: NextPage<SessionProps> = (props) => {
     }
   };
 
-  if (redirecting)
-    return (
-      <div>
-        <p>Redirecting...</p>
-      </div>
-    );
+  if (redirecting) return <Redirecting />;
   else {
     return (
       <div>

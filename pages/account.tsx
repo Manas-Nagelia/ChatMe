@@ -9,6 +9,7 @@ import { NextPage } from "next";
 import removeWhitespace from "../utils/validation/removeWhitespace";
 import Avatar from "../modules/auth/components/Avatar";
 import useRouteGuard from "../utils/guards/useRouteGuard";
+import Redirecting from "../components/Redirecting";
 
 const Account: NextPage<SessionProps> = (props) => {
   const [loading, setLoading] = useState(true);
@@ -97,12 +98,7 @@ const Account: NextPage<SessionProps> = (props) => {
     return data.charAt(0).toUpperCase() + data.slice(1);
   };
 
-  if (redirecting)
-    return (
-      <div>
-        <p>Redirecting...</p>
-      </div>
-    );
+  if (redirecting) return <Redirecting />;
   else {
     return (
       <div>
