@@ -674,6 +674,7 @@ __metadata:
     next: 12.0.10
     react: 17.0.2
     react-dom: 17.0.2
+    react-supabase: ^0.2.0
     typescript: 4.5.5
   languageName: unknown
   linkType: soft
@@ -2513,6 +2514,16 @@ __metadata:
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: f7a19ac3496de32ca9ae12aa030f00f14a3d45374f1ceca0af707c831b2a6098ef0d6bdae51bd437b0a306d7f01d4677fcc8de7c0d331eb47ad0f46130e53c5f
+  languageName: node
+  linkType: hard
+
+"react-supabase@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "react-supabase@npm:0.2.0"
+  peerDependencies:
+    "@supabase/supabase-js": ^1.11.6
+    react: ^17.0.0
+  checksum: ddf80b3e12f0230fe99b2faf66220d5c5ed18f4f8099e769241ccb562b50cd31fe9f703579f53fb453959dbdfb3e29bde74b366db0c3d9009a3d8fa65c18424b
   languageName: node
   linkType: hard
 
