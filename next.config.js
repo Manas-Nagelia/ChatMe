@@ -27,7 +27,17 @@ const nextConfig = {
         source: "/profile",
         destination: "/account",
         permanent: true,
-      }
+      },
+      {
+        source: "signup",
+        destination: "/auth",
+        permanent: true,
+      },
+      {
+        source: "login",
+        destination: "/auth",
+        permanent: true,
+      },
     ]
   }
 };
