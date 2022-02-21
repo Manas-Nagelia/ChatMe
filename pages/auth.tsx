@@ -3,8 +3,12 @@ import { useState } from "react";
 import checkIfEmpty from "../utils/validation/checkIfEmpty";
 import { supabase } from "../utils/db/supabaseClient";
 import removeWhitespace from "../utils/validation/removeWhitespace";
+import useRouteGuard from "../utils/guards/useRouteGuard";
+import { AccountProps } from "../modules/auth/interfaces/AccountProps";
 
-const Auth: NextPage = () => {
+const Auth: NextPage<AccountProps> = (props) => {
+  const redirecting = useRouteGuard(props.session, true);
+
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [alert, setAlert] = useState("");
@@ -33,32 +37,40 @@ const Auth: NextPage = () => {
     }
   };
 
-  return (
-    <div>
-      <h1>Sign in via magic link to chat:</h1>
-      <p>
-        Just enter in your email to get a magic link sent to your email, that
-        signs you in instantly!
-      </p>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleLogin(removeWhitespace(email));
-        }}
-      >
-        <input
-          type="email"
-          placeholder="Your email"
-          value={removeWhitespace(email)}
-          onChange={(e) => setEmail(removeWhitespace(e.target.value))}
-        />
-        <button disabled={loading} type="submit">
-          <span>{loading ? "Loading..." : "Send email"}</span>
-        </button>
-      </form>
-      <p>{!loading && alert}</p>
-    </div>
-  );
+  if (redirecting)
+    return (
+      <div>
+        <p>Redirecting...</p>
+      </div>
+    );
+  else {
+    return (
+      <div>
+        <h1>Sign in via magic link to chat:</h1>
+        <p>
+          Just enter in your email to get a magic link sent to your email, that
+          signs you in instantly!
+        </p>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin(removeWhitespace(email));
+          }}
+        >
+          <input
+            type="email"
+            placeholder="Your email"
+            value={removeWhitespace(email)}
+            onChange={(e) => setEmail(removeWhitespace(e.target.value))}
+          />
+          <button disabled={loading} type="submit">
+            <span>{loading ? "Loading..." : "Send email"}</span>
+          </button>
+        </form>
+        <p>{!loading && alert}</p>
+      </div>
+    );
+  }
 };
 
 export default Auth;
