@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import HomePage from "../components/Home";
 import { SessionProps } from "../interfaces/SessionProps";
-import Chats from "../components/chats";
+import Chats from "../components/Chats";
 
 const Home: NextPage<SessionProps> = (props) => {
   return (

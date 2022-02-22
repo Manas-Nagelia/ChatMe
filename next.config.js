@@ -29,12 +29,12 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "signup",
+        source: "/signup",
         destination: "/auth",
         permanent: true,
       },
       {
-        source: "login",
+        source: "/login",
         destination: "/auth",
         permanent: true,
       },
