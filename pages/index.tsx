@@ -4,15 +4,7 @@ import { SessionProps } from "../interfaces/SessionProps";
 import Chats from "../components/Chats";
 
 const Home: NextPage<SessionProps> = (props) => {
-  return (
-    <div>
-      {!props.session ? (
-        <HomePage />
-      ) : (
-        <Chats session={props.session} />
-      )}
-    </div>
-  );
+  return <div>{!props.session ? <HomePage /> : <Chats />}</div>;
 };
 
 export default Home;
