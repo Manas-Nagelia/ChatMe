@@ -1,9 +1,8 @@
 import type { NextPage } from "next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRealtime } from "react-supabase";
 import Loading from "./Loading";
 import { supabase } from "../utils/db/supabaseClient";
-
 
 const Chats: NextPage = () => {
   const [loading, setLoading] = useState(true);
@@ -18,6 +17,18 @@ const Chats: NextPage = () => {
   if (data && loading) setLoading(false);
 
   if (error) console.log(error);
+
+  const fetchData = async () => {
+    const { data, error } = await supabase.rpc("search_last_name", {
+      search_query: "Nage",
+    });
+
+    console.log(data);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const sendMessage = async () => {
     const userId = supabase.auth.user().id;
