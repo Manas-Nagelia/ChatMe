@@ -59,6 +59,10 @@ const Chats: NextPage = () => {
     else setMessage("");
   };
 
+  const setPerson = (value: string) => {
+    setUser(value);
+  };
+
   return (
     <div>
       <h1>Your chats</h1>
@@ -75,14 +79,22 @@ const Chats: NextPage = () => {
           }}
         />
       </form>
-      {user != "" && autocomplete.length === 0 && <p>No user found with that name</p>}
+      {user != "" && autocomplete.length === 0 && (
+        <p>No user found with that name</p>
+      )}
       {autocomplete && autocomplete.length > 0 && (
         <ul>
           {autocomplete.map((item) => (
             <li key={item.id}>
-              <Link href={`chat/${item.id}`}>
-                <a>{item.first_name + " " + item.last_name}</a>
-              </Link>
+              <p
+                style={{ cursor: "pointer" }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPerson(item.first_name + " " + item.last_name);
+                }}
+              >
+                {item.first_name + " " + item.last_name}
+              </p>
             </li>
           ))}
         </ul>
