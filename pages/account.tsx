@@ -21,36 +21,44 @@ const Account: NextPage<SessionProps> = (props) => {
 
   const redirecting = useRouteGuard(props.session);
   useEffect(() => {
-    if (!redirecting) getProfile();
-  }, [redirecting]);
+    const getProfile = async () => {
+      try {
+        setLoading(true);
+        const user = supabase.auth.user();
+        setEmail(user!.email!);
 
-  const getProfile = async () => {
-    try {
-      setLoading(true);
-      const user = supabase.auth.user();
-      setEmail(user!.email!);
+        let { data, error, status } = await supabase
+          .from("profiles")
+          .select(`first_name, last_name, avatar_url`)
+          .eq("id", user!.id)
+          .single();
 
-      let { data, error, status } = await supabase
-        .from("profiles")
-        .select(`first_name, last_name, avatar_url`)
-        .eq("id", user!.id)
-        .single();
+        const queriedData: Profile = data;
 
-      const queriedData: Profile = data;
+        if (!queriedData) {
+          const { data, error } = await supabase
+            .from("profiles")
+            .insert([{ first_name: "", last_name: "", avatar_url: null, email: email }]);
 
-      if (error && status !== 406) console.log(error);
+          if (error) console.log(error);
+        } else {
+          if (error && status !== 406) console.log(error);
 
-      if (queriedData) {
-        setFirstName(removeWhitespace(queriedData.first_name));
-        setLastName(removeWhitespace(queriedData.last_name));
-        setAvatarUrl(removeWhitespace(queriedData.avatar_url));
+          if (queriedData) {
+            setFirstName(removeWhitespace(queriedData.first_name));
+            setLastName(removeWhitespace(queriedData.last_name));
+            setAvatarUrl(removeWhitespace(queriedData.avatar_url));
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    if (!redirecting) getProfile();
+  }, [redirecting, email]);
 
   const showAlert = (message: string, seconds: number) => {
     setAlert(message);

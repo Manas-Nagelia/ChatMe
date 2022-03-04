@@ -3,13 +3,15 @@ import { useState, useEffect } from "react";
 import { useRealtime } from "react-supabase";
 import Loading from "./Loading";
 import { supabase } from "../utils/db/supabaseClient";
-import Link from "next/link";
 
 const Chats: NextPage = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [user, setUser] = useState("");
+  const [userId, setUserId] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [autocomplete, setAutocomplete] = useState([]);
+  const [added, setAdded] = useState(false);
 
   const [{ data, error }] = useRealtime("messages", {
     select: {
@@ -22,36 +24,64 @@ const Chats: NextPage = () => {
   if (error) console.log(error);
 
   useEffect(() => {
+    async function filter(arr: any, callback: any) {
+      const fail = Symbol();
+      return (
+        await Promise.all(
+          arr.map(async (item: any) => ((await callback(item)) ? item : fail))
+        )
+      ).filter((i) => i !== fail);
+    }
+
     const fetchData = async () => {
       const { data, error } = await supabase.rpc("search_first_name", {
         search_query: user,
       });
 
-      if (data.length === 0) {
+      const newData = data.filter((user) => user.id != supabase.auth.user().id);
+
+      const filteredData = await filter(newData, async (user) => {
+        const { data } = await supabase
+          .from("connections")
+          .select()
+          .eq("connection_to", user.id);
+        return data.length === 0;
+      });
+
+      if (newData.length === 0) {
         const { data, error } = await supabase.rpc("search_last_name", {
           search_query: user,
         });
 
-        if (!error) setAutocomplete(data);
+        const newData = data.filter(
+          (user) => user.id != supabase.auth.user().id
+        );
+
+        const filteredData = await filter(newData, async (user) => {
+          const { data } = await supabase
+            .from("connections")
+            .select()
+            .eq("connection_to", user.id);
+          return data.length === 0;
+        });
+
+        if (!error) setAutocomplete(filteredData);
         else console.log(error);
       } else {
-        if (!error) setAutocomplete(data);
+        if (!error) setAutocomplete(filteredData);
         else console.log(error);
-
-        setAutocomplete(data);
       }
     };
 
     fetchData();
-  }, [user]);
+  }, [user, userId]);
 
   const sendMessage = async () => {
-    const userId = supabase.auth.user().id;
     const { data, error } = await supabase.from("messages").insert([
       {
-        msg_from: userId,
+        msg_from: supabase.auth.user().id,
         message: message,
-        msg_to: "87d2b27c-14ae-4219-ab3f-b7a3a981cdb9",
+        msg_to: userId,
       },
     ]);
 
@@ -59,15 +89,53 @@ const Chats: NextPage = () => {
     else setMessage("");
   };
 
-  const setPerson = (value: string) => {
+  const setPerson = (value: string, id: string, email: string) => {
     setUser(value);
+    setUserId(id);
+    setUserEmail(email);
+    setAdded(true);
+  };
+
+  const addUser = async () => {
+    const { data: selectData, error: selectError } = await supabase
+      .from("connections")
+      .select()
+      .eq("connection_to", userId);
+
+    if (selectData.length != 0) {
+      // TODO - add error message
+      console.log("User already exists");
+    } else {
+      const { data: emailData, error: emailError } = await supabase
+        .from("profiles")
+        .select()
+        .eq("id", userId);
+
+      const { data, error } = await supabase.from("connections").insert([
+        {
+          connection_from: supabase.auth.user().id,
+          to_email: emailData[0].email,
+          connection_to: userId,
+        },
+      ]);
+
+      if (error) console.log(error);
+      else setAdded(false);
+    }
   };
 
   return (
     <div>
       <h1>Your chats</h1>
       {loading && <Loading />}
-      <form autoComplete="off" onSubmit={(e) => e.preventDefault()}>
+      <form
+        autoComplete="off"
+        onSubmit={(e) => {
+          e.preventDefault();
+          addUser();
+          setUser("");
+        }}
+      >
         <label htmlFor="user">User: </label>
         <input
           type="text"
@@ -78,6 +146,7 @@ const Chats: NextPage = () => {
             setUser(e.target.value);
           }}
         />
+        {added && <input type="submit" value="Add" />}
       </form>
       {user != "" && autocomplete.length === 0 && (
         <p>No user found with that name</p>
@@ -90,7 +159,11 @@ const Chats: NextPage = () => {
                 style={{ cursor: "pointer" }}
                 onClick={(e) => {
                   e.preventDefault();
-                  setPerson(item.first_name + " " + item.last_name);
+                  setPerson(
+                    item.first_name + " " + item.last_name,
+                    item.id,
+                    item.email
+                  );
                 }}
               >
                 {item.first_name + " " + item.last_name}
