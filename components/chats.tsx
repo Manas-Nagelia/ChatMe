@@ -111,16 +111,18 @@ const Chats: NextPage = () => {
         .select()
         .eq("id", userId);
 
-      const { data, error } = await supabase.from("connections").insert([
-        {
-          connection_from: supabase.auth.user().id,
-          to_email: emailData[0].email,
-          connection_to: userId,
-        },
-      ]);
+      if (!emailError) {
+        const { data, error } = await supabase.from("connections").insert([
+          {
+            connection_from: supabase.auth.user().id,
+            to_email: emailData[0].email,
+            connection_to: userId,
+          },
+        ]);
 
-      if (error) console.log(error);
-      else setAdded(false);
+        if (error) console.log(error);
+        else setAdded(false);
+      }
     }
   };
 
