@@ -1,4 +1,3 @@
-import "../styles/global.css";
 import { useState, useEffect } from "react";
 import type { AppProps } from "next/app";
 import { Session } from "@supabase/supabase-js";
