@@ -6,6 +6,7 @@ import removeWhitespace from "../utils/validation/removeWhitespace";
 import useRouteGuard from "../utils/guards/useRouteGuard";
 import { SessionProps } from "../interfaces/SessionProps";
 import Redirecting from "../components/Redirecting";
+import { Title } from "@mantine/core";
 
 const Auth: NextPage<SessionProps> = (props) => {
   const redirecting = useRouteGuard(props.session, true);
@@ -42,7 +43,7 @@ const Auth: NextPage<SessionProps> = (props) => {
   else {
     return (
       <div>
-        <h1>Sign in via magic link to chat:</h1>
+        <Title>Sign in via magic link to chat:</Title>
         <p>
           Just enter in your email to get a magic link sent to your email, that
           signs you in instantly!
