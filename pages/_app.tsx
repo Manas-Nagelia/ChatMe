@@ -1,9 +1,10 @@
+import "../styles/global.css";
 import { useState, useEffect } from "react";
 import type { AppProps } from "next/app";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "../utils/db/supabaseClient";
 import { SupabaseProvider } from "../utils/db/supabaseProvider";
-import { MantineProvider } from "@mantine/core";
+import { MantineProvider, Global, MantineTheme } from "@mantine/core";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [session, setSession] = useState<Session | null>(null);
@@ -27,6 +28,13 @@ function MyApp({ Component, pageProps }: AppProps) {
       }}
     >
       <SupabaseProvider>
+        <Global
+          styles={(theme: MantineTheme) => ({
+            body: {
+              margin: theme.spacing.xs,
+            },
+          })}
+        />
         <Component {...pageProps} />
       </SupabaseProvider>
     </MantineProvider>
