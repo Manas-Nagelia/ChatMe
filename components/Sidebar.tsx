@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { AppShell, Button, Textarea, Loader } from "@mantine/core";
+import { AppShell, Button, Textarea, Loader, Center } from "@mantine/core";
 import Links from "./Links";
 import MainHeader from "./Header";
 import { useState } from "react";
@@ -35,29 +35,40 @@ const Sidebar: NextPage = () => {
   };
 
   if (!loading) {
-      return (
-        <AppShell
-          padding="md"
-          navbar={<Links width={{ base: 300 }} height={500} padding="md" />}
-          header={<MainHeader height={70} padding="xs" />}
+    return (
+      <AppShell
+        padding="md"
+        navbar={<Links width={{ base: 300 }} height={500} padding="md" />}
+        header={<MainHeader height={70} padding="xs" />}
+      >
+        {data &&
+          data.map((message) => <p key={message.id}>{message.message}</p>)}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            sendMessage();
+          }}
+          autoComplete="off"
         >
-          {data && data.map((message) => <p key={message.id}>{message.message}</p>)}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              sendMessage();
-            }}
-            autoComplete="off"
-          >
-            <Textarea placeholder="Message" label="Message" onChange={(e) => setMessage(e.target.value)} value={message} />
-            <Button type="submit" mt="xs">Send</Button>
-          </form>
-        </AppShell>
-      );
+          <Textarea
+            placeholder="Message"
+            label="Message"
+            onChange={(e) => setMessage(e.target.value)}
+            value={message}
+          />
+          <Button type="submit" mt="xs" disabled={message === "" ? true : false}>
+            Send
+          </Button>
+        </form>
+      </AppShell>
+    );
   } else {
-      return ( // TODO Make a skeleton here
+    return (
+      // TODO Make a skeleton here
+      <Center>
         <Loader />
-      )
+      </Center>
+    );
   }
 };
 
