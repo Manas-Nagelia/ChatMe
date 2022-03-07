@@ -3,7 +3,7 @@ import { AppShell, Button, Textarea, Loader, Center } from "@mantine/core";
 import Links from "./Links";
 import MainHeader from "./Header";
 import { useState } from "react";
-import { supabase } from "../utils/db/supabaseClient";
+import { supabase } from "../../../utils/db/supabaseClient";
 import { useRealtime } from "react-supabase";
 
 const Sidebar: NextPage = () => {

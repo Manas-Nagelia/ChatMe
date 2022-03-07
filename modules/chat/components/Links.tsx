@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import { Navbar, NavbarProps, TextInput, Button, Text } from "@mantine/core";
 import { useState, useEffect, FormEvent } from "react";
-import { supabase } from "../utils/db/supabaseClient";
+import { supabase } from "../../../utils/db/supabaseClient";
 
 const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
   const [user, setUser] = useState("");
@@ -194,7 +194,6 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
           </ul>
         )}
       </Navbar.Section>
-      {connections && connections.map((connection: any) => {})}
     </Navbar>
   );
 };
