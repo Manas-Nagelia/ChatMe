@@ -118,7 +118,7 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
           {added && <Button type="submit" mt={5}>Add user</Button>}
         </form>
         {user != "" && autocomplete.length === 0 && (
-          <Text size="md">No user found with that name</Text>
+          <Text size="md" mt="xs">No user found with that name</Text>
         )}
         {autocomplete && autocomplete.length > 0 && (
           <ul>
