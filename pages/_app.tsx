@@ -24,7 +24,23 @@ function MyApp({ Component, pageProps }: AppProps) {
       withGlobalStyles
       withNormalizeCSS
       theme={{
+        fontFamily: "Poppins, sans-serif",
         headings: { fontFamily: "Raleway, sans-serif" },
+        colors: {
+          brand: [
+            "#1D2736",
+            "#212F44",
+            "#253957",
+            "#28446F",
+            "#29518F",
+            "#2661B9",
+            "#2D76E4",
+            "#6395DF",
+            "#9AB7E2",
+            "#D2DDEF",
+          ],
+        },
+        primaryColor: "brand",
       }}
     >
       <Head>
