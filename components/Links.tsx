@@ -4,13 +4,20 @@ import { useState, useEffect, FormEvent } from "react";
 import { supabase } from "../utils/db/supabaseClient";
 
 const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
-  const [user, setUser] = useState(""); // auto
-  const [userId, setUserId] = useState(""); // auto
+  const [user, setUser] = useState("");
+  const [userId, setUserId] = useState("");
   const [userEmail, setUserEmail] = useState(""); // TODO read the user email
-  const [autocomplete, setAutocomplete] = useState<any[]>([]); // auto
-  const [added, setAdded] = useState(false); // auto
+  const [autocomplete, setAutocomplete] = useState<any[]>([]);
+  const [added, setAdded] = useState(false);
+  const [connections, setConnections] = useState<any[] | null>(null);
+  const [names, setNames] = useState<any[]>([]);
 
   useEffect(() => {
+    async function map(arr: any, callback: any) {
+      return await Promise.all(
+        arr.map(async (item: any) => await callback(item))
+      );
+    }
     async function filter(arr: any, callback: any) {
       const fail = Symbol();
       return (
@@ -62,8 +69,42 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
       }
     };
 
+    const fetchNames = async (item: any) => {
+      const id = item.connection_to;
+
+      const { data, error }: any = await supabase
+        .from("profiles")
+        .select()
+        .eq("id", id);
+
+      const name = data[0].first_name + " " + data[0].last_name;
+
+      return name;
+    };
+
+    const fetchConnections = async () => {
+      if (!connections) {
+        const { data, error } = await supabase
+          .from("connections")
+          .select("to_email, connection_to");
+
+        if (!error) setConnections(data);
+        else console.log(error);
+      }
+
+      let names: any;
+      if (connections) {
+        names = Promise.all(connections!.map((item) => fetchNames(item)));
+      }
+
+      return names;
+    };
+
     fetchData();
-  }, [user, userId]);
+    fetchConnections().then((names) => {
+      if (names) setNames(names);
+    });
+  }, [user, userId, connections]);
 
   const setPerson = (value: string, id: string, email: string) => {
     setUser(value);
@@ -72,7 +113,7 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
     setAdded(true);
   };
 
-  // TODO Add a nofitication if successful
+  // TODO Add a notification if successful
   const addUser = async () => {
     const { data: selectData, error: selectError } = await supabase
       .from("connections")
@@ -114,11 +155,22 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
             setUser("");
           }}
         >
-          <TextInput placeholder="Name" label="User's name" onChange={(e) => setUser(e.target.value)} value={user} />
-          {added && <Button type="submit" mt={5}>Add user</Button>}
+          <TextInput
+            placeholder="Name"
+            label="Add a user"
+            onChange={(e) => setUser(e.target.value)}
+            value={user}
+          />
+          {added && (
+            <Button type="submit" mt={5}>
+              Add user
+            </Button>
+          )}
         </form>
         {user != "" && autocomplete.length === 0 && (
-          <Text size="md" mt="xs">No user found with that name</Text>
+          <Text size="md" mt="xs">
+            No user found with that name
+          </Text>
         )}
         {autocomplete && autocomplete.length > 0 && (
           <ul>
@@ -142,6 +194,7 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
           </ul>
         )}
       </Navbar.Section>
+      {connections && connections.map((connection: any) => {})}
     </Navbar>
   );
 };
