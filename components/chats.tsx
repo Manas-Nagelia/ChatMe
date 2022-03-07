@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRealtime } from "react-supabase";
 import Loading from "./Loading";
 import { supabase } from "../utils/db/supabaseClient";
+import Sidebar from "./Sidebar";
 
 const Chats: NextPage = () => {
   const [loading, setLoading] = useState(true);
@@ -10,7 +11,7 @@ const Chats: NextPage = () => {
   const [user, setUser] = useState("");
   const [userId, setUserId] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [autocomplete, setAutocomplete] = useState([]);
+  const [autocomplete, setAutocomplete] = useState<any[]>([]);
   const [added, setAdded] = useState(false);
 
   const [{ data, error }] = useRealtime("messages", {
@@ -23,6 +24,7 @@ const Chats: NextPage = () => {
 
   if (error) console.log(error);
 
+  // auto
   useEffect(() => {
     async function filter(arr: any, callback: any) {
       const fail = Symbol();
@@ -38,14 +40,14 @@ const Chats: NextPage = () => {
         search_query: user,
       });
 
-      const newData = data.filter((user) => user.id != supabase.auth.user().id);
+      const newData = data!.filter((user) => user.id != supabase.auth.user()!.id);
 
-      const filteredData = await filter(newData, async (user) => {
+      const filteredData = await filter(newData, async (user: any) => {
         const { data } = await supabase
           .from("connections")
           .select()
           .eq("connection_to", user.id);
-        return data.length === 0;
+        return data!.length === 0;
       });
 
       if (newData.length === 0) {
@@ -53,16 +55,16 @@ const Chats: NextPage = () => {
           search_query: user,
         });
 
-        const newData = data.filter(
-          (user) => user.id != supabase.auth.user().id
+        const newData = data!.filter(
+          (user) => user.id != supabase.auth.user()!.id
         );
 
-        const filteredData = await filter(newData, async (user) => {
+        const filteredData = await filter(newData, async (user: any) => {
           const { data } = await supabase
             .from("connections")
             .select()
             .eq("connection_to", user.id);
-          return data.length === 0;
+          return data!.length === 0;
         });
 
         if (!error) setAutocomplete(filteredData);
@@ -79,7 +81,7 @@ const Chats: NextPage = () => {
   const sendMessage = async () => {
     const { data, error } = await supabase.from("messages").insert([
       {
-        msg_from: supabase.auth.user().id,
+        msg_from: supabase.auth.user()!.id,
         message: message,
         msg_to: userId,
       },
@@ -89,6 +91,7 @@ const Chats: NextPage = () => {
     else setMessage("");
   };
 
+  // auto
   const setPerson = (value: string, id: string, email: string) => {
     setUser(value);
     setUserId(id);
@@ -96,13 +99,14 @@ const Chats: NextPage = () => {
     setAdded(true);
   };
 
+  // auto
   const addUser = async () => {
     const { data: selectData, error: selectError } = await supabase
       .from("connections")
       .select()
       .eq("connection_to", userId);
 
-    if (selectData.length != 0) {
+    if (selectData!.length != 0) {
       // TODO - add error message
       console.log("User already exists");
     } else {
@@ -114,8 +118,8 @@ const Chats: NextPage = () => {
       if (!emailError) {
         const { data, error } = await supabase.from("connections").insert([
           {
-            connection_from: supabase.auth.user().id,
-            to_email: emailData[0].email,
+            connection_from: supabase.auth.user()!.id,
+            to_email: emailData![0].email,
             connection_to: userId,
           },
         ]);
@@ -128,7 +132,7 @@ const Chats: NextPage = () => {
 
   return (
     <div>
-      <h1>Your chats</h1>
+      <Sidebar />
       {loading && <Loading />}
       <form
         autoComplete="off"
@@ -155,7 +159,7 @@ const Chats: NextPage = () => {
       )}
       {autocomplete && autocomplete.length > 0 && (
         <ul>
-          {autocomplete.map((item) => (
+          {autocomplete.map((item: any) => (
             <li key={item.id}>
               <p
                 style={{ cursor: "pointer" }}

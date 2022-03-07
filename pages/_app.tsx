@@ -4,6 +4,7 @@ import { Session } from "@supabase/supabase-js";
 import { supabase } from "../utils/db/supabaseClient";
 import { SupabaseProvider } from "../utils/db/supabaseProvider";
 import { MantineProvider, Global, MantineTheme } from "@mantine/core";
+import Head from "next/head";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [session, setSession] = useState<Session | null>(null);
@@ -26,6 +27,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         headings: { fontFamily: "Raleway, sans-serif" },
       }}
     >
+      <Head>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
       <SupabaseProvider>
         <Global
           styles={(theme: MantineTheme) => ({
