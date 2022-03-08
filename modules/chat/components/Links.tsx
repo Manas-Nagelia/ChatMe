@@ -1,7 +1,18 @@
 import { NextPage } from "next";
-import { Navbar, NavbarProps, TextInput, Button, Text } from "@mantine/core";
+import {
+  Navbar,
+  NavbarProps,
+  TextInput,
+  Button,
+  Text,
+  Loader,
+} from "@mantine/core";
 import { useState, useEffect, FormEvent } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
+import { Connections } from "../interfaces/Connections";
+import { NameObject } from "../interfaces/NameObject";
+import ConnectionUI from "./ConnectionUI";
+import { ConnectionProps } from "../interfaces/ConnectionProps";
 
 const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
   const [user, setUser] = useState("");
@@ -9,8 +20,9 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
   const [userEmail, setUserEmail] = useState(""); // TODO read the user email
   const [autocomplete, setAutocomplete] = useState<any[]>([]);
   const [added, setAdded] = useState(false);
-  const [connections, setConnections] = useState<any[] | null>(null);
-  const [names, setNames] = useState<any[]>([]);
+  const [connections, setConnections] = useState<any | null>(null);
+  const [names, setNames] = useState<any>([]);
+  const [nameId, setNameId] = useState("");
 
   useEffect(() => {
     async function map(arr: any, callback: any) {
@@ -69,7 +81,7 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
       }
     };
 
-    const fetchNames = async (item: any) => {
+    const fetchNames = async (item: Connections) => {
       const id = item.connection_to;
 
       const { data, error }: any = await supabase
@@ -79,7 +91,7 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
 
       const name = data[0].first_name + " " + data[0].last_name;
 
-      return name;
+      return { name, id };
     };
 
     const fetchConnections = async () => {
@@ -92,17 +104,23 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
         else console.log(error);
       }
 
-      let names: any;
+      let result: NameObject | Promise<{ name: string; id: string }[]> | null =
+        null;
+
       if (connections) {
-        names = Promise.all(connections!.map((item) => fetchNames(item)));
+        result = Promise.all(
+          connections!.map((item: Connections) => fetchNames(item))
+        );
       }
 
-      return names;
+      return result;
     };
 
     fetchData();
-    fetchConnections().then((names) => {
-      if (names) setNames(names);
+    fetchConnections().then((res: any) => {
+      if (res) {
+        setNames(res);
+      }
     });
   }, [user, userId, connections]);
 
@@ -194,6 +212,7 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
           </ul>
         )}
       </Navbar.Section>
+      {names.length === 0 ? <Loader mt="xs" /> : <ConnectionUI names={names} email={userEmail} />}
     </Navbar>
   );
 };
