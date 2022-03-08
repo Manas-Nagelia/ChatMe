@@ -90,8 +90,9 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
         .eq("id", id);
 
       const name = data[0].first_name + " " + data[0].last_name;
+      const email = data[0].email;
 
-      return { name, id };
+      return { name, id, email };
     };
 
     const fetchConnections = async () => {
@@ -212,7 +213,7 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
           </ul>
         )}
       </Navbar.Section>
-      {names.length === 0 ? <Loader mt="xs" /> : <ConnectionUI names={names} email={userEmail} />}
+      {names.length === 0 ? <Loader mt="xs" /> : <ConnectionUI names={names} />}
     </Navbar>
   );
 };
