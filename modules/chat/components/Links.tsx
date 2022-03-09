@@ -12,7 +12,6 @@ import { supabase } from "../../../utils/db/supabaseClient";
 import { Connections } from "../interfaces/Connections";
 import { NameObject } from "../interfaces/NameObject";
 import ConnectionUI from "./ConnectionUI";
-import { ConnectionProps } from "../interfaces/ConnectionProps";
 
 const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
   const [user, setUser] = useState("");
@@ -213,7 +212,7 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
           </ul>
         )}
       </Navbar.Section>
-      {names.length === 0 ? <Loader mt="xs" /> : <ConnectionUI names={names} />}
+      {names.length !== 0 && <ConnectionUI names={names} />}
     </Navbar>
   );
 };

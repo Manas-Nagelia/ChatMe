@@ -17,7 +17,7 @@ const ConnectionUI: NextPage<ConnectionProps> = (props) => {
       {props.names &&
         props.names.length > 0 &&
         props.names.map((name: NameObject) => (
-          <Navbar.Section key={name.id} mt="md">
+          <Navbar.Section key={name.id} mt="md" onClick={() => {(id !== name.id) ? router.push(`/chats/${name.id}`) : router.push(`/`)}}>
             <Paper
               sx={(theme) => ({
                 backgroundColor:
@@ -28,7 +28,6 @@ const ConnectionUI: NextPage<ConnectionProps> = (props) => {
                 ":hover": { border: `0.5px solid ${theme.colors.brand[6]}`, transition: "all 200ms ease-in-out" },
               })}
               padding="xs"
-              onClick={(e: any) => console.log("y")}
             >
               <Text
                 color={id === name.id ? "#e6e6e6" : theme.colors.dark[9]}

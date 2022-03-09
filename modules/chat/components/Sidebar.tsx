@@ -1,12 +1,15 @@
 import { NextPage } from "next";
-import { AppShell, Button, Textarea, Loader, Center } from "@mantine/core";
+import { AppShell, Button, Textarea, Loader, Center, Text } from "@mantine/core";
 import Links from "./Links";
 import MainHeader from "./Header";
 import { useState } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
 import { useRealtime } from "react-supabase";
+import { useRouter } from "next/router";
 
 const Sidebar: NextPage = () => {
+  const router = useRouter();
+  const { id } = router.query;
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [userId, setUserId] = useState("");
@@ -34,6 +37,13 @@ const Sidebar: NextPage = () => {
     else setMessage("");
   };
 
+  let messageData = null;
+  if (data && id) {
+    messageData = data.filter((message) => message.msg_from === id);
+  }
+
+  console.log(id);
+
   if (!loading) {
     return (
       <AppShell
@@ -41,9 +51,11 @@ const Sidebar: NextPage = () => {
         navbar={<Links width={{ base: 300 }} height={500} padding="md" />}
         header={<MainHeader height={70} padding="xs" />}
       >
-        {data &&
-          data.map((message) => <p key={message.id}>{message.message}</p>)}
-        <form
+        {messageData ?
+          messageData.map((message) => (
+            <Text key={message.id}>{message.message}</Text>
+          )): <Text mb="md">Select a person to chat to</Text>}
+        {messageData && <form
           onSubmit={(e) => {
             e.preventDefault();
             sendMessage();
@@ -56,10 +68,14 @@ const Sidebar: NextPage = () => {
             onChange={(e) => setMessage(e.target.value)}
             value={message}
           />
-          <Button type="submit" mt="xs" disabled={message === "" ? true : false}>
+          <Button
+            type="submit"
+            mt="xs"
+            disabled={message === "" ? true : false}
+          >
             Send
           </Button>
-        </form>
+        </form>}
       </AppShell>
     );
   } else {
