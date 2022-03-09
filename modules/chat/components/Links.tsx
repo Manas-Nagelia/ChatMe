@@ -24,11 +24,6 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
   const [nameId, setNameId] = useState("");
 
   useEffect(() => {
-    async function map(arr: any, callback: any) {
-      return await Promise.all(
-        arr.map(async (item: any) => await callback(item))
-      );
-    }
     async function filter(arr: any, callback: any) {
       const fail = Symbol();
       return (

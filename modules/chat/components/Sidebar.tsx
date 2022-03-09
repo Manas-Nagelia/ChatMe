@@ -1,8 +1,15 @@
 import { NextPage } from "next";
-import { AppShell, Button, Textarea, Loader, Center, Text } from "@mantine/core";
+import {
+  AppShell,
+  Button,
+  Textarea,
+  Loader,
+  Center,
+  Text,
+} from "@mantine/core";
 import Links from "./Links";
 import MainHeader from "./Header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
 import { useRealtime } from "react-supabase";
 import { useRouter } from "next/router";
@@ -12,11 +19,11 @@ const Sidebar: NextPage = () => {
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
-  const [userId, setUserId] = useState("");
+  const [renderMessage, setRenderMessage] = useState<any[] | null>(null);
 
   const [{ data, error }] = useRealtime("messages", {
     select: {
-      columns: "id,message",
+      columns: "id,msg_from,message,msg_to",
     },
   });
 
@@ -29,7 +36,7 @@ const Sidebar: NextPage = () => {
       {
         msg_from: supabase.auth.user()!.id,
         message: message,
-        msg_to: userId, // TODO get this value based on who you're talking to
+        msg_to: id, // TODO get this value based on who you're talking to
       },
     ]);
 
@@ -37,10 +44,38 @@ const Sidebar: NextPage = () => {
     else setMessage("");
   };
 
-  let messageData = null;
+  let messageData: any = null;
   if (data && id) {
-    messageData = data.filter((message) => message.msg_from === id);
+    messageData = data.filter(
+      (message) =>
+        (message.msg_to === id &&
+          message.msg_from === supabase.auth.user()!.id) ||
+        (message.msg_from === id && message.msg_to === supabase.auth.user()!.id)
+    );
   }
+
+  
+  
+  const renderData = async () => {
+    if (messageData) {
+      return Promise.all(
+        messageData.map(async (message: any) => {
+          const id = message.id;
+          const messageData = message.message;
+          const { data: messageFromName, error } = await supabase
+            .from("profiles")
+            .select()
+            .eq("id", message.msg_from)
+            .single();
+          return { id, messageData, messageFromName };
+        })
+      );
+    }
+  };
+
+  renderData().then((res: any) => {
+    setRenderMessage(res);
+  });
 
   if (!loading) {
     return (
@@ -49,31 +84,38 @@ const Sidebar: NextPage = () => {
         navbar={<Links width={{ base: 300 }} height={500} padding="md" />}
         header={<MainHeader height={70} padding="xs" />}
       >
-        {messageData ?
-          messageData.map((message) => (
-            <Text key={message.id}>{message.message}</Text>
-          )): <Text mb="md">Select a person to chat to</Text>}
-        {messageData && <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            sendMessage();
-          }}
-          autoComplete="off"
-        >
-          <Textarea
-            placeholder="Message"
-            label="Message"
-            onChange={(e) => setMessage(e.target.value)}
-            value={message}
-          />
-          <Button
-            type="submit"
-            mt="xs"
-            disabled={message === "" ? true : false}
+        {renderMessage ? (
+          renderMessage.map((msg) => (
+            <Text key={msg.id} mb="md">
+              {msg.messageFromName.first_name}: {msg.messageData}
+            </Text>
+          ))
+        ) : (
+          <Text mb="md">Select a person to chat to</Text>
+        )}
+        {messageData && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendMessage();
+            }}
+            autoComplete="off"
           >
-            Send
-          </Button>
-        </form>}
+            <Textarea
+              placeholder="Message"
+              label="Message"
+              onChange={(e) => setMessage(e.target.value)}
+              value={message}
+            />
+            <Button
+              type="submit"
+              mt="xs"
+              disabled={message === "" ? true : false}
+            >
+              Send
+            </Button>
+          </form>
+        )}
       </AppShell>
     );
   } else {

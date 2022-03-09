@@ -11,7 +11,6 @@ const ConnectionUI: NextPage<ConnectionProps> = (props) => {
   const { id } = router.query;
   const theme = useMantineTheme();
 
-  console.log(id);
   return (
     <>
       {props.names &&
