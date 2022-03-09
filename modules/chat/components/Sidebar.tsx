@@ -42,8 +42,6 @@ const Sidebar: NextPage = () => {
     messageData = data.filter((message) => message.msg_from === id);
   }
 
-  console.log(id);
-
   if (!loading) {
     return (
       <AppShell
