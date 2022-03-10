@@ -10,6 +10,7 @@ import removeWhitespace from "../utils/validation/removeWhitespace";
 import Avatar from "../modules/auth/components/Avatar";
 import useRouteGuard from "../utils/guards/useRouteGuard";
 import Redirecting from "../components/Redirecting";
+import Head from "next/head";
 
 const Account: NextPage<SessionProps> = (props) => {
   const [loading, setLoading] = useState(true);
@@ -110,6 +111,9 @@ const Account: NextPage<SessionProps> = (props) => {
   else {
     return (
       <div>
+        <Head>
+          <title>Your account</title>
+        </Head>
         <form
           onSubmit={(e) => updateProfile({ firstName, lastName, avatarUrl }, e)}
         >
