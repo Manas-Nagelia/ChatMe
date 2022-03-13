@@ -32,7 +32,7 @@ const ConnectionUI: NextPage<ConnectionProps> = (props) => {
                 color={id === name.id ? "#e6e6e6" : theme.colors.dark[9]}
                 weight="bold"
               >
-                {name.name}
+                {name.first_name + " " + name.last_name}
               </Text>
               <Text
                 size="xs"

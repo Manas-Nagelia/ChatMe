@@ -75,48 +75,24 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
       }
     };
 
-    const fetchNames = async (item: Connections) => {
-      const id = item.connection_to;
-
-      const { data, error }: any = await supabase
-        .from("profiles")
-        .select()
-        .eq("id", id);
-
-      const name = data[0].first_name + " " + data[0].last_name;
-      const email = data[0].email;
-
-      return { name, id, email };
-    };
-
     const fetchConnections = async () => {
       if (!connections) {
         const { data, error } = await supabase
           .from("connections")
-          .select("to_email, connection_to");
+          .select(`to_email, connection_to`);
+        
+          const { data: names, error: nameError } = await supabase.from("profiles").select().eq("id", data!.map((item: any) => item.connection_to));
+          
+          if (!nameError) names?.map((name) => setNames((prevState: any) => [...prevState, name]));
+          else console.log(nameError);
 
         if (!error) setConnections(data);
         else console.log(error);
       }
-
-      let result: NameObject | Promise<{ name: string; id: string }[]> | null =
-        null;
-
-      if (connections) {
-        result = Promise.all(
-          connections!.map((item: Connections) => fetchNames(item))
-        );
-      }
-
-      return result;
     };
 
     fetchData();
-    fetchConnections().then((res: any) => {
-      if (res) {
-        setNames(res);
-      }
-    });
+    fetchConnections();
   }, [user, userId, connections]);
 
   const setPerson = (value: string, id: string, email: string) => {
