@@ -60,7 +60,6 @@ const Sidebar: NextPage = () => {
           message.msg_from === supabase.auth.user()!.id) ||
         (message.msg_from === id && message.msg_to === supabase.auth.user()!.id)
     );
-    console.log(messageData);
   };
 
   const submit = (e: any) => {
@@ -98,15 +97,15 @@ const Sidebar: NextPage = () => {
             <Textarea
               placeholder="Your message"
               label="Message"
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={(e) => {setMessage(e.target.value); console.log(message.valueOf())}}
               value={message}
               autosize
-              onKeyDown={(e) => (e.key === "Enter" && !e.shiftKey) ? submit(e) : null}
+              onKeyDown={(e) => (e.key === "Enter" && !e.shiftKey) ? message.trimEnd() !== "" && submit(e) : null}
             />
             <Button
               type="submit"
               mt="xs"
-              disabled={message === "" ? true : false}
+              disabled={message.trimEnd() == "" ? true : false}
             >
               Send
             </Button>
