@@ -1,5 +1,5 @@
 import { Session } from "@supabase/supabase-js";
 
-export interface AccountProps {
+export interface SessionProps {
   session: Session;
 }
