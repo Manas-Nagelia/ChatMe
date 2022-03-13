@@ -6,16 +6,18 @@ import {
   Loader,
   Center,
   Text,
+  TextInput,
 } from "@mantine/core";
 import Links from "./Links";
 import MainHeader from "./Header";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
 import { useRealtime } from "react-supabase";
 import { useRouter } from "next/router";
 import { Message } from "../interfaces/Message";
 
 const Sidebar: NextPage = () => {
+  const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
@@ -59,6 +61,11 @@ const Sidebar: NextPage = () => {
         (message.msg_from === id && message.msg_to === supabase.auth.user()!.id)
     );
     console.log(messageData);
+  };
+
+  const submit = (e: any) => {
+    e.preventDefault();
+    sendMessage();
   }
 
   if (!loading) {
@@ -86,12 +93,15 @@ const Sidebar: NextPage = () => {
               sendMessage();
             }}
             autoComplete="off"
+            ref={formRef}
           >
             <Textarea
-              placeholder="Message"
+              placeholder="Your message"
               label="Message"
               onChange={(e) => setMessage(e.target.value)}
               value={message}
+              autosize
+              onKeyDown={(e) => (e.key === "Enter" && !e.shiftKey) ? submit(e) : null}
             />
             <Button
               type="submit"
