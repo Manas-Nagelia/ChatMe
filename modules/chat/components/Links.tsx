@@ -1,27 +1,16 @@
 import { NextPage } from "next";
-import {
-  Navbar,
-  NavbarProps,
-  TextInput,
-  Button,
-  Text,
-  Loader,
-} from "@mantine/core";
+import { Navbar, NavbarProps, TextInput, Button, Text } from "@mantine/core";
 import { useState, useEffect, FormEvent } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
-import { Connections } from "../interfaces/Connections";
-import { NameObject } from "../interfaces/NameObject";
 import ConnectionUI from "./ConnectionUI";
 
 const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
   const [user, setUser] = useState("");
   const [userId, setUserId] = useState("");
-  const [userEmail, setUserEmail] = useState(""); // TODO read the user email
   const [autocomplete, setAutocomplete] = useState<any[]>([]);
   const [added, setAdded] = useState(false);
   const [connections, setConnections] = useState<any | null>(null);
   const [names, setNames] = useState<any>([]);
-  const [nameId, setNameId] = useState("");
 
   useEffect(() => {
     async function filter(arr: any, callback: any) {
@@ -77,17 +66,29 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
 
     const fetchConnections = async () => {
       if (!connections) {
-        const { data, error } = await supabase
-          .from("connections")
-          .select(`to_email, connection_to`);
-        
-          const { data: names, error: nameError } = await supabase.from("profiles").select().eq("id", data!.map((item: any) => item.connection_to));
-          
-          if (!nameError) names?.map((name) => setNames((prevState: any) => [...prevState, name]));
-          else console.log(nameError);
+        const q = supabase.auth.user()!.id;
 
-        if (!error) setConnections(data);
-        else console.log(error);
+        const params = new URLSearchParams({ q });
+
+        const res = await fetch(`/api/search?${params}`);
+        const resData = await res.json();
+        console.log(resData);
+
+        const { data: names, error: nameError } = await supabase
+          .from("profiles")
+          .select()
+          .eq(
+            "id",
+            resData.connections.map((item: any) => item.connection_to)
+          );
+
+        if (!nameError)
+          names?.map((name) =>
+            setNames((prevState: any) => [...prevState, name])
+          );
+        else console.log(nameError);
+
+        if (res) setConnections(res);
       }
     };
 
@@ -98,7 +99,6 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
   const setPerson = (value: string, id: string, email: string) => {
     setUser(value);
     setUserId(id);
-    setUserEmail(email);
     setAdded(true);
   };
 

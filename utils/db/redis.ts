@@ -19,7 +19,7 @@ let schema = new Schema(
   }
 );
 
-const createConnection = async (data: any) => {
+export const createConnection = async (data: any) => {
   await connect();
 
   const repository = client.fetchRepository(schema);
@@ -29,4 +29,22 @@ const createConnection = async (data: any) => {
   return id;
 };
 
-export default createConnection;
+export const createIndex = async () => {
+  await connect();
+
+  const repository = client.fetchRepository(schema);
+  await repository.createIndex();
+};
+
+export const searchConnections = async (query: string) => {
+  await connect();
+
+  const repository = client.fetchRepository(schema);
+  const connections = await repository
+    .search()
+    .where("connection_to")
+    .eq(query)
+    .return.all();
+
+  return connections;
+};
