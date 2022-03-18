@@ -120,9 +120,13 @@ const Sidebar: NextPage = () => {
   } else {
     return (
       // TODO Make a skeleton here
-      <Center>
+      <AppShell
+        padding="md"
+        navbar={<Links width={{ base: 300 }} height={500} padding="md" />}
+        header={<MainHeader height={70} padding="xs" />}
+      >
         <Loader />
-      </Center>
+      </AppShell>
     );
   }
 };

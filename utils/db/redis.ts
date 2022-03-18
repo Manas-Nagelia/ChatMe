@@ -6,6 +6,10 @@ const connect = async () => {
   if (!client.isOpen()) await client.open(process.env.REDIS_URL);
 };
 
+const disconnect = async () => {
+  if (client.isOpen()) await client.close();
+};
+
 class Connections extends Entity {}
 let schema = new Schema(
   Connections,
@@ -26,6 +30,8 @@ export const createConnection = async (data: any) => {
   const connection = repository.createEntity(data);
 
   const id = await repository.save(connection);
+  let ttlInSeconds = 24 * 60 * 60; // 24 hours
+  await repository.expire(id, ttlInSeconds);
   return id;
 };
 
@@ -42,7 +48,7 @@ export const searchConnections = async (query: string) => {
   const repository = client.fetchRepository(schema);
   const connections = await repository
     .search()
-    .where("connection_to")
+    .where("connection_from")
     .eq(query)
     .return.all();
 

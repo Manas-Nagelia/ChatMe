@@ -26,13 +26,13 @@ const Chats: NextPage<SessionProps> = (props) => {
         else if (error) console.log(error);
     };
 
-    fetchName();
+    if (id) fetchName();
   }, [id]);
 
   return (
     <div>
       <Head>
-        <title>ChatMe - {name}</title>
+        {name ? <title>ChatMe - {name}</title> : <title>ChatMe - Loading</title>}
       </Head>
       <Sidebar />
     </div>
