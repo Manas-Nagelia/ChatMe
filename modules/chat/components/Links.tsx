@@ -3,7 +3,6 @@ import { Navbar, NavbarProps, TextInput, Button, Text } from "@mantine/core";
 import { useState, useEffect, FormEvent } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
 import ConnectionUI from "./ConnectionUI";
-import { Connections } from "../interfaces/Connections";
 
 const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
   const [user, setUser] = useState("");
@@ -184,6 +183,8 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
         if (error) console.log(error);
         else setAdded(false);
       }
+
+      window.location.reload();
     }
   };
 
