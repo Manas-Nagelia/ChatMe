@@ -167,6 +167,20 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
           },
         ]);
 
+        const res = await fetch("/api/connections", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            connection_from: supabase.auth.user()!.id,
+            to_email: emailData![0].email,
+            connection_to: userId,
+          }),
+        });
+
+        if (res.status != 200) console.log("Error adding connection");
+
         if (error) console.log(error);
         else setAdded(false);
       }
