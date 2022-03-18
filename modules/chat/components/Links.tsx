@@ -1,27 +1,16 @@
 import { NextPage } from "next";
-import {
-  Navbar,
-  NavbarProps,
-  TextInput,
-  Button,
-  Text,
-  Loader,
-} from "@mantine/core";
+import { Navbar, NavbarProps, TextInput, Button, Text } from "@mantine/core";
 import { useState, useEffect, FormEvent } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
-import { Connections } from "../interfaces/Connections";
-import { NameObject } from "../interfaces/NameObject";
 import ConnectionUI from "./ConnectionUI";
 
 const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
   const [user, setUser] = useState("");
   const [userId, setUserId] = useState("");
-  const [userEmail, setUserEmail] = useState(""); // TODO read the user email
   const [autocomplete, setAutocomplete] = useState<any[]>([]);
   const [added, setAdded] = useState(false);
   const [connections, setConnections] = useState<any | null>(null);
-  const [names, setNames] = useState<any>([]);
-  const [nameId, setNameId] = useState("");
+  const [names, setNames] = useState<any[]>([]);
 
   useEffect(() => {
     async function filter(arr: any, callback: any) {
@@ -75,19 +64,70 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
       }
     };
 
+    const fetchNamesFromConnections = async (connectionData: any) => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select()
+        .eq(
+          "id",
+          connectionData.map((item: any) => item.connection_to)
+        );
+
+      if (!error)
+        data!.map((name: any) => {
+          // setNames((prevState: any) => [...prevState, name])
+          const newNames = [...names, name];
+          setNames(newNames);
+        });
+      else console.log(error);
+
+      return data;
+    };
+
+    const cacheConnections = async (data: any[] | null) => {
+      for (const connection of data!) {
+        const res = await fetch("/api/connections", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            connection_from: connection.connection_from,
+            to_email: connection.to_email,
+            connection_to: connection.connection_to,
+          }),
+        });
+
+        if (res.status === 200) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+
     const fetchConnections = async () => {
       if (!connections) {
-        const { data, error } = await supabase
-          .from("connections")
-          .select(`to_email, connection_to`);
-        
-          const { data: names, error: nameError } = await supabase.from("profiles").select().eq("id", data!.map((item: any) => item.connection_to));
-          
-          if (!nameError) names?.map((name) => setNames((prevState: any) => [...prevState, name]));
-          else console.log(nameError);
+        const q = supabase.auth.user()!.id;
 
-        if (!error) setConnections(data);
-        else console.log(error);
+        const params = new URLSearchParams({ q });
+
+        const res = await fetch(`/api/search?${params}`);
+        const resData = await res.json();
+
+        if (resData.connections.length > 0) {
+          await fetchNamesFromConnections(resData.connections);
+          setConnections(res);
+        } else {
+          const { data, error } = await supabase.from("connections").select();
+          if (!error && data && data.length > 0) {
+            const result = await fetchNamesFromConnections(data);
+            setConnections(result);
+
+            const cacheResult = cacheConnections(data);
+            if (!cacheResult) console.log("Error caching connections");
+          }
+        }
       }
     };
 
@@ -95,10 +135,9 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
     fetchConnections();
   }, [user, userId, connections]);
 
-  const setPerson = (value: string, id: string, email: string) => {
+  const setPerson = (value: string, id: string) => {
     setUser(value);
     setUserId(id);
-    setUserEmail(email);
     setAdded(true);
   };
 
@@ -127,9 +166,25 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
           },
         ]);
 
+        const res = await fetch("/api/connections", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            connection_from: supabase.auth.user()!.id,
+            to_email: emailData![0].email,
+            connection_to: userId,
+          }),
+        });
+
+        if (res.status != 200) console.log("Error adding connection");
+
         if (error) console.log(error);
         else setAdded(false);
       }
+
+      window.location.reload();
     }
   };
 
@@ -169,11 +224,7 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
                   style={{ cursor: "pointer" }}
                   onClick={(e: FormEvent) => {
                     e.preventDefault();
-                    setPerson(
-                      item.first_name + " " + item.last_name,
-                      item.id,
-                      item.email
-                    );
+                    setPerson(item.first_name + " " + item.last_name, item.id);
                   }}
                 >
                   {item.first_name + " " + item.last_name}
