@@ -17,9 +17,9 @@ const Chats: NextPage<SessionProps> = (props) => {
   useEffect(() => {
     const fetchName = async () => {
       const { data, error } = await supabase
-        .from("profiles")
+        .from("connections")
         .select()
-        .eq("id", id)
+        .eq("connection_to", id)
         .single();
 
         if (data && !error) setName(data.first_name + " " + data.last_name);

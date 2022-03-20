@@ -3,11 +3,16 @@ import type { AppProps } from "next/app";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "../utils/db/supabaseClient";
 import { SupabaseProvider } from "../utils/db/supabaseProvider";
-import { MantineProvider, Global, MantineTheme } from "@mantine/core";
+import { MantineProvider, Global, MantineTheme, Center } from "@mantine/core";
 import Head from "next/head";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import Footer from "../components/Footer";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [session, setSession] = useState<Session | null>(null);
+  const router = useRouter();
+  const basePath = router.pathname;
 
   useEffect(() => {
     setSession(supabase.auth.session());
@@ -49,13 +54,12 @@ function MyApp({ Component, pageProps }: AppProps) {
       <SupabaseProvider>
         <Global
           styles={(theme: MantineTheme) => ({
-            body: {
-              margin: theme.spacing.xs,
-            },
+            body: { margin: theme.spacing.xs },
           })}
         />
         <Component {...pageProps} />
       </SupabaseProvider>
+      {/* {basePath === "/" && session ? null : <Footer />} */}
     </MantineProvider>
   );
 }

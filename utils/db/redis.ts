@@ -3,7 +3,12 @@ import { Client, Entity, Schema, Repository } from "redis-om";
 const client = new Client();
 
 const connect = async () => {
-  if (!client.isOpen()) await client.open(process.env.REDIS_URL);
+  if (!client.isOpen()) {
+    await client.open(process.env.REDIS_URL);
+    console.log("Connected to Redis");
+  } else {
+    console.log("Already connected to Redis");
+  }
 };
 
 const disconnect = async () => {

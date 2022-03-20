@@ -1,10 +1,11 @@
 import { NextPage } from "next";
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
-import { Avatar } from "../interfaces/Avatar";
+import { Avatar as AvatarProps } from "../interfaces/Avatar";
 import Image from "next/image";
+import { Avatar as AvatarImage } from "@mantine/core";
 
-const Avatar: NextPage<Avatar> = (props) => {
+const Avatar: NextPage<AvatarProps> = (props) => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [alert, setAlert] = useState("");
@@ -69,12 +70,7 @@ const Avatar: NextPage<Avatar> = (props) => {
   return (
     <div>
       {avatarUrl ? (
-        <Image
-          src={avatarUrl}
-          alt="Avatar"
-          width={props.size}
-          height={props.size}
-        />
+        <AvatarImage src={avatarUrl} radius="xl" alt="Avatar" size={props.size} />
       ) : (
         <div
           style={{

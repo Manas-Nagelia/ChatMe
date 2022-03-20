@@ -11,6 +11,9 @@ import Avatar from "../modules/auth/components/Avatar";
 import useRouteGuard from "../utils/guards/useRouteGuard";
 import Redirecting from "../components/Redirecting";
 import Head from "next/head";
+import { Button, Center, Container, Global, Paper, TextInput } from "@mantine/core";
+import { MdAlternateEmail } from "react-icons/md";
+import { useRouter } from "next/router";
 
 const Account: NextPage<SessionProps> = (props) => {
   const [loading, setLoading] = useState(true);
@@ -20,7 +23,10 @@ const Account: NextPage<SessionProps> = (props) => {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [alert, setAlert] = useState("");
 
+  const router = useRouter();
+
   const redirecting = useRouteGuard(props.session);
+
   useEffect(() => {
     const getProfile = async () => {
       try {
@@ -37,18 +43,14 @@ const Account: NextPage<SessionProps> = (props) => {
         const queriedData: Profile = data;
 
         if (!queriedData) {
-          const { data, error } = await supabase
-            .from("profiles")
-            .insert([{ first_name: "", last_name: "", avatar_url: null, email: email }]);
-
-          if (error) console.log(error);
+          router.push("/getStarted");
         } else {
           if (error && status !== 406) console.log(error);
 
           if (queriedData) {
             setFirstName(removeWhitespace(queriedData.first_name));
             setLastName(removeWhitespace(queriedData.last_name));
-            setAvatarUrl(removeWhitespace(queriedData.avatar_url));
+            setAvatarUrl(queriedData.avatar_url);
           }
         }
       } catch (err) {
@@ -59,7 +61,7 @@ const Account: NextPage<SessionProps> = (props) => {
     };
 
     if (!redirecting) getProfile();
-  }, [redirecting, email]);
+  }, [redirecting, email, router]);
 
   const showAlert = (message: string, seconds: number) => {
     setAlert(message);
@@ -92,7 +94,7 @@ const Account: NextPage<SessionProps> = (props) => {
         updated_at: new Date(),
       };
 
-      const error = await upsertData("profiles", updates);
+      const error = await supabase.from("profiles").update(updates);
 
       if (error) throw error;
     } catch (err) {
@@ -111,53 +113,83 @@ const Account: NextPage<SessionProps> = (props) => {
   else {
     return (
       <div>
+        <Global
+          styles={(theme: any) => ({
+            body: {
+              backgroundColor: theme.colors.background,
+            },
+          })}
+        />
         <Head>
           <title>Your account</title>
         </Head>
-        <form
-          onSubmit={(e) => updateProfile({ firstName, lastName, avatarUrl }, e)}
-        >
-          <Avatar
-            url={avatarUrl}
-            size={150}
-            onUpload={(url: string) => {
-              setAvatarUrl(url);
-              updateProfile({ firstName, lastName, avatarUrl: url });
-            }}
-          />
-          <label htmlFor="email">Email:</label>
-          <input
-            id="email"
-            type="text"
-            value={email} // session!.user!.email!
-            disabled
-          />
-          <label htmlFor="firstName">First Name:</label>
-          <input
-            id="firstName"
-            type="text"
-            value={firstName.trim()}
-            onChange={(e) =>
-              setFirstName(capFirstLetter(removeWhitespace(e.target.value)))
-            }
-            disabled={loading}
-          />
-          <label htmlFor="lastName">Last Name:</label>
-          <input
-            id="lastName"
-            type="text"
-            value={lastName}
-            onChange={(e) =>
-              setLastName(capFirstLetter(removeWhitespace(e.target.value)))
-            }
-            disabled={loading}
-          />
-          <button disabled={loading} type="submit">
-            {loading ? "Loading..." : "Update"}
-          </button>
-        </form>
-        <p>{!loading && alert}</p>
-        <button onClick={() => supabase.auth.signOut()}>Sign out</button>
+        <Center>
+          <Paper
+            sx={(theme) => ({
+              backgroundColor: theme.colors.gray[3],
+              width: "50%",
+            })}
+            padding="xl"
+          >
+            <Center>
+              <form
+                onSubmit={(e) =>
+                  updateProfile({ firstName, lastName, avatarUrl }, e)
+                }
+              >
+                <Avatar
+                  url={avatarUrl}
+                  size={150}
+                  onUpload={(url: string) => {
+                    setAvatarUrl(url);
+                    updateProfile({ firstName, lastName, avatarUrl: url });
+                  }}
+                />
+                <TextInput
+                  label="Email"
+                  type="email"
+                  icon={<MdAlternateEmail />}
+                  rightSectionWidth={1}
+                />
+                <input
+                  id="email"
+                  type="text"
+                  value={email} // session!.user!.email!
+                  disabled
+                />
+                <label htmlFor="firstName">First Name:</label>
+                <input
+                  id="firstName"
+                  type="text"
+                  value={firstName.trim()}
+                  onChange={(e) =>
+                    setFirstName(
+                      capFirstLetter(removeWhitespace(e.target.value))
+                    )
+                  }
+                  disabled={loading}
+                />
+                <label htmlFor="lastName">Last Name:</label>
+                <input
+                  id="lastName"
+                  type="text"
+                  value={lastName}
+                  onChange={(e) =>
+                    setLastName(
+                      capFirstLetter(removeWhitespace(e.target.value))
+                    )
+                  }
+                  disabled={loading}
+                />
+                <button disabled={loading} type="submit">
+                  {loading ? "Loading..." : "Update"}
+                </button>
+              </form>
+              <p>{!loading && alert}</p>
+              <Button onClick={() => supabase.auth.signOut()}>Sign out</Button>
+            </Center>
+          </Paper>
+        </Center>
       </div>
     );
   }
