@@ -2,8 +2,7 @@ import { NextPage } from "next";
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
 import { Avatar as AvatarProps } from "../interfaces/Avatar";
-import Image from "next/image";
-import { Avatar as AvatarImage } from "@mantine/core";
+import { Avatar as AvatarImage, Paper, MantineTheme, Center } from "@mantine/core";
 
 const Avatar: NextPage<AvatarProps> = (props) => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -70,15 +69,20 @@ const Avatar: NextPage<AvatarProps> = (props) => {
   return (
     <div>
       {avatarUrl ? (
-        <AvatarImage src={avatarUrl} radius="xl" alt="Avatar" size={props.size} />
+        <AvatarImage
+          src={avatarUrl}
+          radius="xl"
+          alt="Avatar"
+          size={props.size}
+        />
       ) : (
-        <div
-          style={{
+        <Paper
+          sx={(theme: MantineTheme) => ({
             height: props.size,
             width: props.size,
-            backgroundColor: "gray",
+            backgroundColor: theme.colors.gray[3],
             borderRadius: "100%",
-          }}
+          })}
         />
       )}
       <div>
