@@ -10,14 +10,13 @@ import {
 } from "@mantine/core";
 import Links from "./Links";
 import MainHeader from "./Header";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
 import { useRealtime } from "react-supabase";
 import { useRouter } from "next/router";
 import { Message } from "../interfaces/Message";
 
 const Sidebar: NextPage = () => {
-  const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
@@ -92,7 +91,6 @@ const Sidebar: NextPage = () => {
               sendMessage();
             }}
             autoComplete="off"
-            ref={formRef}
           >
             <Textarea
               placeholder="Your message"
