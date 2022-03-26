@@ -40,7 +40,7 @@ const GetStarted: NextPage<any> = (props) => {
         const queriedData: Profile = data;
 
         if (queriedData) {
-          router.push("/account");
+          router.push("/");
         }
       } catch (err) {
         console.log(err);

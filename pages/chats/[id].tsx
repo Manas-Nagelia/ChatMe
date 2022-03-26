@@ -6,6 +6,7 @@ import Sidebar from "../../modules/chat/components/Sidebar";
 import { supabase } from "../../utils/db/supabaseClient";
 import useRouteGuard from "../../utils/guards/useRouteGuard";
 import Head from "next/head";
+import { Profile } from "../../modules/auth/interfaces/Profile";
 
 const Chats: NextPage<SessionProps> = (props) => {
   const [name, setName] = useState("");
@@ -15,6 +16,21 @@ const Chats: NextPage<SessionProps> = (props) => {
   const { id } = router.query;
 
   useEffect(() => {
+    const getProfile = async () => {
+      // setLoading(true);
+      const user = supabase.auth.user();
+
+      let { data, error, status } = await supabase
+        .from("profiles")
+        .select(`first_name, last_name, avatar_url`)
+        .eq("id", props.session.user?.id)
+        .single();
+
+      const queriedData: Profile = data;
+
+      if (!queriedData) router.push("/getStarted");
+    };
+
     const fetchName = async () => {
       const { data, error } = await supabase
         .from("connections")
@@ -22,17 +38,22 @@ const Chats: NextPage<SessionProps> = (props) => {
         .eq("connection_to", id)
         .single();
 
-        if (data && !error) setName(data.first_name + " " + data.last_name);
-        else if (error) console.log(error);
+      if (data && !error) setName(data.first_name + " " + data.last_name);
+      else if (error) console.log(error);
     };
 
+    if (props.session) getProfile();
     if (id) fetchName();
-  }, [id]);
+  }, [id, router, props.session]);
 
   return (
     <div>
       <Head>
-        {name ? <title>ChatMe - {name}</title> : <title>ChatMe - Loading</title>}
+        {name ? (
+          <title>ChatMe - {name}</title>
+        ) : (
+          <title>ChatMe - Loading</title>
+        )}
       </Head>
       <Sidebar />
     </div>
