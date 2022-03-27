@@ -133,7 +133,7 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
 
     fetchData();
     fetchConnections();
-  }, [user, userId, connections]);
+  }, [user, userId, connections]); // ! Do not put names in the dependency array
 
   const setPerson = (value: string, id: string) => {
     setUser(value);
