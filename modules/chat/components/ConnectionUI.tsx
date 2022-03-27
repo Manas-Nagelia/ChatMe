@@ -16,7 +16,7 @@ const ConnectionUI: NextPage<ConnectionProps> = (props) => {
       {props.names &&
         props.names.length > 0 &&
         props.names.map((name: NameObject) => (
-          <Navbar.Section key={name.id} mt="md" onClick={() => {(id !== name.id) ? router.push(`/chats/${name.id}`) : router.push(`/`)}}>
+          <Navbar.Section key={name.id} mt="md" onClick={() => {(id !== name.id) ? router.push(`/chats/${name.id}`) : null}}>
             <Paper
               sx={(theme) => ({
                 backgroundColor:
