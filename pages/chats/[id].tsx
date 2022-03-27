@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { SessionProps } from "../../interfaces/SessionProps";
-import Sidebar from "../../modules/chat/components/Sidebar";
+import Sidebar from "../../modules/chat/components/Chats";
 import { supabase } from "../../utils/db/supabaseClient";
 import useRouteGuard from "../../utils/guards/useRouteGuard";
 import Head from "next/head";
@@ -33,9 +33,9 @@ const Chats: NextPage<SessionProps> = (props) => {
 
     const fetchName = async () => {
       const { data, error } = await supabase
-        .from("connections")
+        .from("profiles")
         .select()
-        .eq("connection_to", id)
+        .eq("id", id)
         .single();
 
       if (data && !error) setName(data.first_name + " " + data.last_name);

@@ -1,132 +1,242 @@
 import { NextPage } from "next";
-import {
-  AppShell,
-  Button,
-  Textarea,
-  Loader,
-  Center,
-  Text,
-  TextInput,
-} from "@mantine/core";
-import Links from "./Links";
-import MainHeader from "./Header";
-import { useState } from "react";
+import { Navbar, NavbarProps, TextInput, Button, Text } from "@mantine/core";
+import { useState, useEffect, FormEvent } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
-import { useRealtime } from "react-supabase";
-import { useRouter } from "next/router";
-import { Message } from "../interfaces/Message";
+import ConnectionUI from "./ConnectionUI";
 
-const Sidebar: NextPage = () => {
-  const router = useRouter();
-  const { id } = router.query;
-  const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState("");
+const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
+  const [user, setUser] = useState("");
+  const [userId, setUserId] = useState("");
+  const [autocomplete, setAutocomplete] = useState<any[]>([]);
+  const [added, setAdded] = useState(false);
+  const [connections, setConnections] = useState<any | null>(null);
+  const [names, setNames] = useState<any[]>([]);
 
-  const [{ data, error }] = useRealtime("messages", {
-    select: {
-      columns: "id,msg_from,message,msg_to,name",
-    },
-  });
+  useEffect(() => {
+    async function filter(arr: any, callback: any) {
+      const fail = Symbol();
+      return (
+        await Promise.all(
+          arr.map(async (item: any) => ((await callback(item)) ? item : fail))
+        )
+      ).filter((i) => i !== fail);
+    }
 
-  if (data && loading) setLoading(false);
+    const fetchData = async () => {
+      const { data, error } = await supabase.rpc("search_first_name", {
+        search_query: user,
+      });
 
-  if (error) console.log(error);
+      const newData = data!.filter(
+        (user) => user.id != supabase.auth.user()!.id
+      );
 
-  const sendMessage = async () => {
-    const { data: profilesData, error: profilesError } = await supabase
-      .from("profiles")
+      const filteredData = await filter(newData, async (user: any) => {
+        const { data } = await supabase
+          .from("connections")
+          .select()
+          .eq("connection_to", user.id);
+        return data!.length === 0;
+      });
+
+      if (newData.length === 0) {
+        const { data, error } = await supabase.rpc("search_last_name", {
+          search_query: user,
+        });
+
+        const newData = data!.filter(
+          (user) => user.id != supabase.auth.user()!.id
+        );
+
+        const filteredData = await filter(newData, async (user: any) => {
+          const { data } = await supabase
+            .from("connections")
+            .select()
+            .eq("connection_to", user.id);
+          return data!.length === 0;
+        });
+
+        if (!error) setAutocomplete(filteredData);
+        else console.log(error);
+      } else {
+        if (!error) setAutocomplete(filteredData);
+        else console.log(error);
+      }
+    };
+
+    const fetchNamesFromConnections = async (connectionData: any) => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select()
+        .eq(
+          "id",
+          connectionData.map((item: any) => item.connection_to)
+        );
+
+      if (!error)
+        data!.map((name: any) => {
+          // setNames((prevState: any) => [...prevState, name])
+          const newNames = [...names, name];
+          setNames(newNames);
+        });
+      else console.log(error);
+
+      return data;
+    };
+
+    const cacheConnections = async (data: any[] | null) => {
+      for (const connection of data!) {
+        const res = await fetch("/api/connections", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            connection_from: connection.connection_from,
+            to_email: connection.to_email,
+            connection_to: connection.connection_to,
+          }),
+        });
+
+        if (res.status === 200) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+
+    const fetchConnections = async () => {
+      if (!connections) {
+        const q = supabase.auth.user()!.id;
+
+        const params = new URLSearchParams({ q });
+
+        const res = await fetch(`/api/search?${params}`);
+        const resData = await res.json();
+
+        if (resData.connections.length > 0) {
+          await fetchNamesFromConnections(resData.connections);
+          setConnections(res);
+        } else {
+          const { data, error } = await supabase.from("connections").select();
+          if (!error && data && data.length > 0) {
+            const result = await fetchNamesFromConnections(data);
+            setConnections(result);
+
+            const cacheResult = cacheConnections(data);
+            if (!cacheResult) console.log("Error caching connections");
+          }
+        }
+      }
+    };
+
+    fetchData();
+    fetchConnections();
+  }, [user, userId, connections]);
+
+  const setPerson = (value: string, id: string) => {
+    setUser(value);
+    setUserId(id);
+    setAdded(true);
+  };
+
+  // TODO Add a notification if successful
+  const addUser = async () => {
+    const { data: selectData, error: selectError } = await supabase
+      .from("connections")
       .select()
-      .eq("id", supabase.auth.user()!.id)
-      .single();
-    const { data, error } = await supabase.from("messages").insert([
-      {
-        msg_from: supabase.auth.user()!.id,
-        message: message,
-        msg_to: id, // TODO get this value based on who you're talking to
-        name: profilesData!.first_name + " " + profilesData!.last_name,
-      },
-    ]);
+      .eq("connection_to", userId);
 
-    if (error) console.log(error);
-    else setMessage("");
+    if (selectData!.length != 0) {
+      // TODO - add error message
+      console.log("User already exists");
+    } else {
+      const { data: emailData, error: emailError } = await supabase
+        .from("profiles")
+        .select()
+        .eq("id", userId);
+
+      if (!emailError) {
+        const { data, error } = await supabase.from("connections").insert([
+          {
+            connection_from: supabase.auth.user()!.id,
+            to_email: emailData![0].email,
+            connection_to: userId,
+          },
+        ]);
+
+        const res = await fetch("/api/connections", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            connection_from: supabase.auth.user()!.id,
+            to_email: emailData![0].email,
+            connection_to: userId,
+          }),
+        });
+
+        if (res.status != 200) console.log("Error adding connection");
+
+        if (error) console.log(error);
+        else setAdded(false);
+      }
+
+      window.location.reload();
+    }
   };
 
-  let messageData: any = null;
-  if (data && id) {
-    messageData = data.filter(
-      (message) =>
-        (message.msg_to === id &&
-          message.msg_from === supabase.auth.user()!.id) ||
-        (message.msg_from === id && message.msg_to === supabase.auth.user()!.id)
-    );
-  }
-
-  const submit = (e: any) => {
-    e.preventDefault();
-    sendMessage();
-  };
-
-  if (!loading) {
-    return (
-      <AppShell
-        padding="md"
-        navbar={<Links width={{ base: 300 }} height={500} padding="md" />}
-        header={<MainHeader height={70} padding="xs" />}
-      >
-        {messageData ? (
-          messageData.map((msg: Message) => (
-            <div key={msg.id}>
-              <Text mb="md">
-                <b>{msg.name}</b>: {msg.message}
-              </Text>
-            </div>
-          ))
-        ) : (
-          <Text mb="md">Select a person to chat to</Text>
-        )}
-        {messageData && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              sendMessage();
-            }}
-            autoComplete="off"
-          >
-            <Textarea
-              placeholder="Your message"
-              label="Message"
-              onChange={(e) => setMessage(e.target.value)}
-              value={message}
-              autosize
-              onKeyDown={(e) =>
-                e.key === "Enter" && !e.shiftKey
-                  ? message.trimEnd() !== "" && submit(e)
-                  : null
-              }
-            />
-            <Button
-              type="submit"
-              mt="xs"
-              disabled={message.trimEnd() == "" ? true : false}
-            >
-              Send
+  return (
+    <Navbar {...props}>
+      <Navbar.Section>
+        <form
+          autoComplete="off"
+          onSubmit={(e) => {
+            e.preventDefault();
+            addUser();
+            setUser("");
+          }}
+        >
+          <TextInput
+            placeholder="Name"
+            label="Add a user"
+            onChange={(e) => setUser(e.target.value)}
+            value={user}
+          />
+          {added && (
+            <Button type="submit" mt={5}>
+              Add user
             </Button>
-          </form>
+          )}
+        </form>
+        {user != "" && autocomplete.length === 0 && (
+          <Text size="md" mt="xs">
+            No user found with that name
+          </Text>
         )}
-      </AppShell>
-    );
-  } else {
-    return (
-      // TODO Make a skeleton here
-      <AppShell
-        padding="md"
-        navbar={<Links width={{ base: 300 }} height={500} padding="md" />}
-        header={<MainHeader height={70} padding="xs" />}
-      >
-        <Loader />
-      </AppShell>
-    );
-  }
+        {autocomplete && autocomplete.length > 0 && (
+          <ul>
+            {autocomplete.map((item: any) => (
+              <li key={item.id}>
+                <Text
+                  style={{ cursor: "pointer" }}
+                  onClick={(e: FormEvent) => {
+                    e.preventDefault();
+                    setPerson(item.first_name + " " + item.last_name, item.id);
+                  }}
+                >
+                  {item.first_name + " " + item.last_name}
+                </Text>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Navbar.Section>
+      {names.length !== 0 && <ConnectionUI names={names} />}
+    </Navbar>
+  );
 };
 
-export default Sidebar;
+export default Links;
