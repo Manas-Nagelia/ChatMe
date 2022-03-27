@@ -21,7 +21,7 @@ const ConnectionUI: NextPage<ConnectionProps> = (props) => {
               sx={(theme) => ({
                 backgroundColor:
                   id === name.id ? theme.colors.brand[6] : "white",
-                border: `0.5px solid ${theme.colors.gray[9]}`,
+                border: id !== name.id ? `0.5px solid ${theme.colors.gray[9]}` : "none",
                 cursor: "pointer",
                 transition: "all 200ms ease-in-out",
                 ":hover": { border: `0.5px solid ${theme.colors.brand[6]}`, transition: "all 200ms ease-in-out" },

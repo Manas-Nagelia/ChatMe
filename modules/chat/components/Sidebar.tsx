@@ -64,24 +64,19 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
       }
     };
 
-    const fetchNamesFromConnections = async (connectionData: any) => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select()
-        .eq(
-          "id",
-          connectionData.map((item: any) => item.connection_to)
-        );
+    const fetchNamesFromConnections = async (connectionData: any[]) => {
+      for (let i = 0; i < connectionData.length; i++) {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select()
+          .eq("id", connectionData[i].connection_to)
+          .single();
+        
+        if (!error) setNames((prevState: any) => [...prevState, data]);
+        else console.log(error);
 
-      if (!error)
-        data!.map((name: any) => {
-          // setNames((prevState: any) => [...prevState, name])
-          const newNames = [...names, name];
-          setNames(newNames);
-        });
-      else console.log(error);
-
-      return data;
+      }
+      return names;
     };
 
     const cacheConnections = async (data: any[] | null) => {
