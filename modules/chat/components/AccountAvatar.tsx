@@ -1,13 +1,15 @@
 import { Avatar, Paper, MantineTheme, Menu, Group } from "@mantine/core";
 import { NextPage } from "next";
 import { useState, useEffect } from "react";
-import {
-  MdSettings,
-} from "react-icons/md";
+import { MdSettings } from "react-icons/md";
 import { supabase } from "../../../utils/db/supabaseClient";
 import { useRouter } from "next/router";
 
-const AccountAvatar: NextPage = () => {
+interface Props {
+  ml?: "xs" | "sm" | "md" | "lg" | "xl";
+  mr?: "xs" | "sm" | "md" | "lg" | "xl";
+}
+const AccountAvatar: NextPage<Props> = (props) => {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarPath, setAvatarPath] = useState("");
   const router = useRouter();
@@ -44,7 +46,12 @@ const AccountAvatar: NextPage = () => {
       <Menu
         control={
           avatarUrl ? (
-            <Avatar src={avatarPath} radius="xl" alt="Avatar" size={45} />
+            <Avatar
+              src={avatarPath}
+              radius="xl"
+              alt="Avatar"
+              size={45}
+            />
           ) : (
             <Paper
               sx={(theme: MantineTheme) => ({
@@ -53,7 +60,6 @@ const AccountAvatar: NextPage = () => {
                 backgroundColor: theme.colors.gray[3],
                 borderRadius: "100%",
               })}
-              mr="xs"
             />
           )
         }
@@ -61,7 +67,12 @@ const AccountAvatar: NextPage = () => {
         trigger="hover"
         delay={200}
       >
-        <Menu.Item icon={<MdSettings size={20} />} onClick={() => router.push("/account")}>Settings</Menu.Item>
+        <Menu.Item
+          icon={<MdSettings size={20} />}
+          onClick={() => router.push("/account")}
+        >
+          Settings
+        </Menu.Item>
       </Menu>
     </>
   );

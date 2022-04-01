@@ -4,8 +4,10 @@ import {
   HeaderProps,
   Title,
   Group,
+  Divider,
 } from "@mantine/core";
 import AccountAvatar from "./AccountAvatar";
+import Logo from "../../../styles/Logo";
 
 const MainHeader: NextPage<any> = (props: Omit<HeaderProps, "children">) => {
   return (

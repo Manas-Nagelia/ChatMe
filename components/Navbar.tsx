@@ -1,12 +1,23 @@
-import { Anchor } from "@mantine/core";
+import { Button, Group } from "@mantine/core";
+import { Session } from "@supabase/supabase-js";
 import type { NextPage } from "next";
-import Link from "next/link";
+import AccountAvatar from "../modules/chat/components/AccountAvatar";
+import Logo from "../styles/Logo";
+import { useRouter } from "next/router";
 
-const Navbar: NextPage = () => {
+interface Props {
+  session: Session | null;
+}
+
+const Navbar: NextPage<Props> = (props) => {
+  const router = useRouter();
+
   return (
     <>
-      <Anchor href="/">Home</Anchor>
-      <Anchor href="/account" ml="xl">Account</Anchor>
+      <Group position="apart" mx={50}>
+        <Logo />
+        {props.session ? <AccountAvatar /> : <Button>Get Started</Button>}
+      </Group>
     </>
   );
 };

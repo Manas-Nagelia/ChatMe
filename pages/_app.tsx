@@ -53,6 +53,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <SupabaseProvider>
+        {(basePath === "/" || basePath.includes("/chats")) && session ? null : (
+          <Navbar session={session} />
+        )}
         <Global
           styles={(theme: MantineTheme) => ({
             body: { margin: theme.spacing.xs },
