@@ -14,7 +14,7 @@ const Navbar: NextPage<Props> = (props) => {
 
   return (
     <>
-      <Group position="apart" mx={80}>
+      <Group position="apart" mx={150}>
         <Logo />
         {props.session ? (
           <AccountAvatar />
