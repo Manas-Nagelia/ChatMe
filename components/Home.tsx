@@ -23,9 +23,10 @@ const useStyles = createStyles((theme) => ({
     color: theme.colors.dark[2],
   },
   heroImage: {
-    position: "relative",
-    bottom: "70px !important",
-    left: "10px !important",
+    position: "absolute",
+    float: "right",
+    // bottom: "70px !important",
+    // left: "300px !important",
   },
 }));
 const HomePage: NextPage = () => {
@@ -63,8 +64,8 @@ const HomePage: NextPage = () => {
         <Paper
           sx={{
             backgroundColor: "transparent",
-            position: "relative",
-            top: -70,
+            position: "absolute",
+            top: "28%",
           }}
         >
           <style jsx global>{`
@@ -109,12 +110,14 @@ const HomePage: NextPage = () => {
           </Button>
           <Paper sx={{ textAlign: "right" }}></Paper>
         </Paper>
-        <Image
-          src={HeroImage}
-          alt="A hero image depicting a globe and people chatting"
-          className={classes.heroImage}
-          width="450%"
-        />
+        <Paper sx={{ "position": "absolute", "top": "5.5%", "left": "55%", "backgroundColor": "transparent" }}>
+          <Image
+            src={HeroImage}
+            alt="A hero image depicting a globe and people chatting"
+            className={classes.heroImage}
+            width="450%"
+          />
+        </Paper>
       </Group>
     </>
   );
