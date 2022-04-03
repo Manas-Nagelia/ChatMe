@@ -22,7 +22,6 @@ const GetStarted: NextPage<any> = (props) => {
   const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
-
   const router = useRouter();
 
   useEffect(() => {
@@ -49,7 +48,12 @@ const GetStarted: NextPage<any> = (props) => {
       }
     };
 
-    if (!redirecting) getProfile();
+    if (props.session) {
+      if (!redirecting) getProfile();
+    } else {
+      setRedirecting(true);
+      router.push("/");
+    }
   }, [router]);
   const generateRandomInt = () => {
     return Math.floor(Math.random() * 1000000000000);
