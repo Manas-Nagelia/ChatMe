@@ -186,7 +186,6 @@ const Account: NextPage<SessionProps> = (props) => {
                 </button>
               </form>
               <p>{!loading && alert}</p>
-              <Button onClick={() => supabase.auth.signOut()}>Sign out</Button>
             </Center>
           </Paper>
         </Center>

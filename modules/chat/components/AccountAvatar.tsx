@@ -2,6 +2,7 @@ import { Avatar, Paper, MantineTheme, Menu, Group } from "@mantine/core";
 import { NextPage } from "next";
 import { useState, useEffect } from "react";
 import { MdSettings } from "react-icons/md";
+import { IoMdExit } from "react-icons/io";
 import { supabase } from "../../../utils/db/supabaseClient";
 import { useRouter } from "next/router";
 
@@ -46,12 +47,7 @@ const AccountAvatar: NextPage<Props> = (props) => {
       <Menu
         control={
           avatarUrl ? (
-            <Avatar
-              src={avatarPath}
-              radius="xl"
-              alt="Avatar"
-              size={45}
-            />
+            <Avatar src={avatarPath} radius="xl" alt="Avatar" size={45} />
           ) : (
             <Paper
               sx={(theme: MantineTheme) => ({
@@ -72,6 +68,12 @@ const AccountAvatar: NextPage<Props> = (props) => {
           onClick={() => router.push("/account")}
         >
           Settings
+        </Menu.Item>
+        <Menu.Item
+          icon={<IoMdExit size={20} />}
+          onClick={() => supabase.auth.signOut()}
+        >
+          Sign out
         </Menu.Item>
       </Menu>
     </>

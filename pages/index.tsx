@@ -29,7 +29,6 @@ const Home: NextPage<SessionProps> = (props) => {
     if (props.session) getProfile();
   }, [props.session, router]);
 
-  
   return (
     <div>
       <Head>

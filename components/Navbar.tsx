@@ -14,9 +14,20 @@ const Navbar: NextPage<Props> = (props) => {
 
   return (
     <>
-      <Group position="apart" mx={50}>
+      <Group position="apart" mx={80}>
         <Logo />
-        {props.session ? <AccountAvatar /> : <Button>Get Started</Button>}
+        {props.session ? (
+          <AccountAvatar />
+        ) : (
+          <Button
+            sx={(theme) => ({
+              boxShadow: "2px 4px 15px rgba(0, 0, 0, 0.25)",
+            })}
+            onClick={() => router.push("/auth")}
+          >
+            Get Started
+          </Button>
+        )}
       </Group>
     </>
   );

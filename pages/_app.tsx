@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import "../styles/Home.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [session, setSession] = useState<Session | null>(null);
@@ -61,6 +62,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             body: { margin: theme.spacing.xs },
           })}
         />
+
         <Component {...pageProps} />
       </SupabaseProvider>
       {/* {basePath === "/" && session ? null : <Footer />} */}
