@@ -23,10 +23,61 @@ const useStyles = createStyles((theme) => ({
     color: theme.colors.dark[2],
   },
   heroImage: {
-    float: "right",
+    objectFit: "cover",
+    "@media (max-width: 900px)": {},
+  },
+  heroImageContainer: {
+    position: "relative",
+    top: "2em",
+    width: "90%",
 
-    "@media (max-width: 900px)": {
-      visibility: "hidden",
+    "@media (max-width: 1000px)": {
+      top: "6em",
+      left: "3em",
+      width: "90%",
+    },
+
+    "@media (max-width: 800px)": {
+      top: "2em",
+      left: "-50%",
+      width: "20em",
+    },
+  },
+  heroImageFullContainer: {
+    position: "absolute",
+    top: "5.5%",
+    left: "55%",
+    backgroundColor: "transparent",
+
+    "@media (max-width: 800px)": {
+      display: "flex",
+      justifyContent: "center",
+      flexDirection: "column",
+      textAlign: "center",
+    },
+  },
+  heroContent: {
+    backgroundColor: "transparent",
+    position: "absolute",
+    top: "28%",
+
+    "@media (max-width: 800px)": {
+      top: "60%",
+      display: "flex",
+      justifyContent: "center",
+      flexDirection: "column",
+      textAlign: "center",
+    },
+  },
+  group: {
+    marginLeft: 150,
+    marginRight: 150,
+
+    "@media (max-width: 800px)": {
+      marginLeft: "10%",
+      marginRight: "10%",
+      flexDirection: "column",
+      alignItems: "center",
     },
   },
 }));
@@ -61,14 +112,8 @@ const HomePage: NextPage = () => {
 
   return (
     <>
-      <Group mx={150} spacing="xl" grow noWrap>
-        <Paper
-          sx={{
-            backgroundColor: "transparent",
-            position: "absolute",
-            top: "28%",
-          }}
-        >
+      <Group className={classes.group} spacing="xl">
+        <Paper className={classes.heroContent}>
           <style jsx global>{`
             body {
               background-image: url("/StripPatterns.svg");
@@ -111,20 +156,14 @@ const HomePage: NextPage = () => {
           </Button>
           <Paper sx={{ textAlign: "right" }}></Paper>
         </Paper>
-        <Paper
-          sx={{
-            position: "absolute",
-            top: "5.5%",
-            left: "55%",
-            backgroundColor: "transparent",
-          }}
-        >
-          <Image
-            src={HeroImage}
-            alt="A hero image depicting a globe and people chatting"
-            className={classes.heroImage}
-            width="450%"
-          />
+        <Paper className={classes.heroImageFullContainer}>
+          <div className={classes.heroImageContainer}>
+            <Image
+              src={HeroImage}
+              alt="A hero image depicting a globe and people chatting"
+              className={classes.heroImage}
+            />
+          </div>
         </Paper>
       </Group>
     </>
