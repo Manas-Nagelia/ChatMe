@@ -23,10 +23,11 @@ const useStyles = createStyles((theme) => ({
     color: theme.colors.dark[2],
   },
   heroImage: {
-    position: "absolute",
     float: "right",
-    // bottom: "70px !important",
-    // left: "300px !important",
+
+    "@media (max-width: 900px)": {
+      visibility: "hidden",
+    },
   },
 }));
 const HomePage: NextPage = () => {
@@ -75,7 +76,7 @@ const HomePage: NextPage = () => {
               background-repeat: no-repeat;
             }
 
-            @media (max-width: 700px) {
+            @media (max-width: 950px) {
               body {
                 background-size: 0%;
               }
@@ -110,7 +111,14 @@ const HomePage: NextPage = () => {
           </Button>
           <Paper sx={{ textAlign: "right" }}></Paper>
         </Paper>
-        <Paper sx={{ "position": "absolute", "top": "5.5%", "left": "55%", "backgroundColor": "transparent" }}>
+        <Paper
+          sx={{
+            position: "absolute",
+            top: "5.5%",
+            left: "55%",
+            backgroundColor: "transparent",
+          }}
+        >
           <Image
             src={HeroImage}
             alt="A hero image depicting a globe and people chatting"
