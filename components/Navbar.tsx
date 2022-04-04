@@ -1,4 +1,4 @@
-import { Button, Group } from "@mantine/core";
+import { Button, createStyles, Group, MantineTheme } from "@mantine/core";
 import { Session } from "@supabase/supabase-js";
 import type { NextPage } from "next";
 import AccountAvatar from "../modules/chat/components/AccountAvatar";
@@ -9,12 +9,32 @@ interface Props {
   session: Session | null;
 }
 
+const useStyles = createStyles((theme: MantineTheme) => ({
+  navbar: {
+    marginLeft: "150px",
+    marginRight: "150px",
+
+    "@media (max-width: 800px)": {
+      marginLeft: "50px",
+      marginRight: "50px",
+    },
+
+    [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
+      marginLeft: "20px",
+      marginRight: "20px",
+    },
+  },
+
+}));
+
 const Navbar: NextPage<Props> = (props) => {
   const router = useRouter();
 
+  const { classes } = useStyles();
+
   return (
     <>
-      <Group position="apart" mx={150}>
+      <Group position="apart" className={classes.navbar}>
         <Logo />
         {props.session ? (
           <AccountAvatar />
