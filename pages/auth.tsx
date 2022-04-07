@@ -6,8 +6,9 @@ import removeWhitespace from "../utils/validation/removeWhitespace";
 import useRouteGuard from "../utils/guards/useRouteGuard";
 import { SessionProps } from "../interfaces/SessionProps";
 import Redirecting from "../components/Redirecting";
-import { Title } from "@mantine/core";
+import { Button, Container, Paper, TextInput, Title } from "@mantine/core";
 import Head from "next/head";
+import { MdEmail } from "react-icons/md";
 
 const Auth: NextPage<SessionProps> = (props) => {
   const redirecting = useRouteGuard(props.session, true);
@@ -43,33 +44,33 @@ const Auth: NextPage<SessionProps> = (props) => {
   if (redirecting) return <Redirecting />;
   else {
     return (
-      <div>
+      <>
         <Head>
           <title>ChatMe</title>
         </Head>
-        <Title>Sign in via magic link to chat:</Title>
-        <p>
-          Just enter in your email to get a magic link sent to your email, that
-          signs you in instantly!
-        </p>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleLogin(removeWhitespace(email));
-          }}
-        >
-          <input
-            type="email"
-            placeholder="Your email"
-            value={removeWhitespace(email)}
-            onChange={(e) => setEmail(removeWhitespace(e.target.value))}
-          />
-          <button disabled={loading} type="submit">
-            <span>{loading ? "Loading..." : "Send email"}</span>
-          </button>
-        </form>
-        <p>{!loading && alert}</p>
-      </div>
+        <Paper mx={150} mt={100}>
+          <Title>Sign in via magic link to chat:</Title>
+          <p>
+            Just enter in your email to get a magic link sent to your email,
+            that signs you in instantly!
+          </p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin(removeWhitespace(email));
+            }}
+          >
+            <TextInput
+              type="email"
+              placeholder="Your email"
+              value={removeWhitespace(email)}
+              onChange={(e) => setEmail(removeWhitespace(e.target.value))}
+            />
+            <Button type="submit" loading={loading} leftIcon={<MdEmail />} mt="md">Submit</Button>
+          </form>
+          <p>{!loading && alert}</p>
+        </Paper>
+      </>
     );
   }
 };

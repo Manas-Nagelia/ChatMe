@@ -24,7 +24,6 @@ const useStyles = createStyles((theme: MantineTheme) => ({
       marginRight: "20px",
     },
   },
-
 }));
 
 const Navbar: NextPage<Props> = (props) => {
@@ -34,19 +33,16 @@ const Navbar: NextPage<Props> = (props) => {
 
   return (
     <>
-      <Group position="apart" className={classes.navbar}>
+      <Group
+        position="apart"
+        className={classes.navbar}
+        sx={{ height: "0px", maxHeight: "0px" }}
+      >
         <Logo />
         {props.session ? (
           <AccountAvatar />
         ) : (
-          <Button
-            sx={(theme) => ({
-              boxShadow: "2px 4px 15px rgba(0, 0, 0, 0.25)",
-            })}
-            onClick={() => router.push("/auth")}
-          >
-            Get Started
-          </Button>
+          null
         )}
       </Group>
     </>

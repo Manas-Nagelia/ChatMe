@@ -1,4 +1,4 @@
-import { createStyles, Paper, Title, Text, Button, Group } from "@mantine/core";
+import { createStyles, Paper, Title, Text, Button, Group, Modal } from "@mantine/core";
 import type { NextPage } from "next";
 import TextTransition from "react-text-transition";
 import { useEffect, useState } from "react";
@@ -24,11 +24,10 @@ const useStyles = createStyles((theme) => ({
   },
   heroImage: {
     objectFit: "cover",
-    "@media (max-width: 900px)": {},
   },
   heroImageContainer: {
     position: "relative",
-    top: "2em",
+    top: "5em",
     width: "90%",
 
     "@media (max-width: 1000px)": {
@@ -165,7 +164,7 @@ const HomePage: NextPage = () => {
             />
           </div>
         </Paper>
-      </Group>
+      </Group> 
     </>
   );
 };
