@@ -2,12 +2,57 @@ import { NextPage } from "next";
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
 import { Avatar as AvatarProps } from "../interfaces/Avatar";
-import { Avatar as AvatarImage, Paper, MantineTheme, Center } from "@mantine/core";
+import {
+  Avatar as AvatarImage,
+  Paper,
+  MantineTheme,
+  Center,
+  Button,
+  TextInput,
+  createStyles,
+  Input,
+  Space,
+  Group,
+} from "@mantine/core";
 
 const Avatar: NextPage<AvatarProps> = (props) => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [alert, setAlert] = useState("");
+
+  const useStyles = createStyles((theme: MantineTheme) => ({
+    fileInput: {
+      opacity: 0,
+      width: "0.1px",
+      height: "0.1px",
+      position: "absolute",
+    },
+    customUpload: {
+      marginLeft: theme.spacing.sm,
+      width: "50%",
+      height: "3em",
+      display: "block",
+      border: "none",
+      backgroundColor: "#2D76E4",
+      padding: theme.spacing.xs,
+      color: "white",
+      fontWeight: "bold",
+      textAlign: "center",
+      cursor: "pointer",
+      fontSize: theme.fontSizes.sm,
+      borderRadius: "0.4em",
+
+      "&:hover": {
+        backgroundColor: "#6395DF",
+      },
+
+      "&:active": {
+        transform: "translateY(1px)",
+      }
+    },
+  }));
+
+  const { classes } = useStyles();
 
   useEffect(() => {
     const downloadImage = async (path: string) => {
@@ -67,7 +112,7 @@ const Avatar: NextPage<AvatarProps> = (props) => {
   };
 
   return (
-    <div>
+    <Group direction="column" align="center" spacing={1}>
       {avatarUrl ? (
         <AvatarImage
           src={avatarUrl}
@@ -85,19 +130,20 @@ const Avatar: NextPage<AvatarProps> = (props) => {
           })}
         />
       )}
-      <div>
-        <label htmlFor="single">{uploading ? "Uploading..." : "Upload"}</label>
         <br />
-        <input
-          type="file"
-          name="single"
-          accept="image/*"
-          onChange={uploadAvatar}
-          disabled={uploading}
-        />
-      </div>
+        <label className={classes.customUpload}>
+          <input
+            type="file"
+            name="single"
+            accept="image/*"
+            onChange={uploadAvatar}
+            className={classes.fileInput}
+            disabled={uploading}
+          />
+          {uploading ? "Uploading..." : "Upload"}
+        </label>
       <p>{alert}</p>
-    </div>
+    </Group>
   );
 };
 

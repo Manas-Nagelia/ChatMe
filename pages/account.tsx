@@ -11,7 +11,15 @@ import Avatar from "../modules/auth/components/Avatar";
 import useRouteGuard from "../utils/guards/useRouteGuard";
 import Redirecting from "../components/Redirecting";
 import Head from "next/head";
-import { Button, Center, Container, Global, Paper, TextInput } from "@mantine/core";
+import {
+  Button,
+  Center,
+  Container,
+  Global,
+  Paper,
+  TextInput,
+  Notification
+} from "@mantine/core";
 import { MdAlternateEmail } from "react-icons/md";
 import { useRouter } from "next/router";
 
@@ -22,7 +30,8 @@ const Account: NextPage<SessionProps> = (props) => {
   const [email, setEmail] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [alert, setAlert] = useState("");
-
+  const [hidden, setHidden] = useState(true);
+ 
   const router = useRouter();
 
   const redirecting = useRouteGuard(props.session);
@@ -63,23 +72,17 @@ const Account: NextPage<SessionProps> = (props) => {
     if (!redirecting) getProfile();
   }, [redirecting, email, router]);
 
-  const showAlert = (message: string, seconds: number) => {
-    setAlert(message);
-
-    setTimeout(() => {
-      setAlert("");
-    }, seconds * 1000);
-  };
-
   const updateProfile = async (
     { firstName, lastName, avatarUrl }: UpdateProfile,
     e?: FormEvent<HTMLFormElement>
   ) => {
     if (e) e.preventDefault();
     if (checkIfEmpty(firstName)) {
-      return showAlert("Please fill in your first name", 1.5);
+      setHidden(false);
+      return setAlert("Please fill in your first name");
     } else if (checkIfEmpty(lastName)) {
-      return showAlert("Please fill in your last name", 1.5);
+      setHidden(false);
+      return setAlert("Please fill in your last name");
     }
 
     try {
@@ -101,7 +104,8 @@ const Account: NextPage<SessionProps> = (props) => {
       console.log(err);
     } finally {
       setLoading(false);
-      showAlert("Profile updated!", 1.5);
+      setHidden(true);
+      setAlert("Profile updated!");
     }
   };
 
@@ -113,23 +117,16 @@ const Account: NextPage<SessionProps> = (props) => {
   else {
     return (
       <div>
-        <Global
-          styles={(theme: any) => ({
-            body: {
-              backgroundColor: theme.colors.background,
-            },
-          })}
-        />
         <Head>
           <title>Your account</title>
         </Head>
-        <Center>
+        <Center mt={100}>
           <Paper
             sx={(theme) => ({
-              backgroundColor: theme.colors.gray[3],
-              width: "50%",
+              backgroundColor: "#f7f7f7",
+              width: "75%",
             })}
-            padding="xl"
+            padding={30}
           >
             <Center>
               <form
@@ -146,21 +143,8 @@ const Account: NextPage<SessionProps> = (props) => {
                   }}
                 />
                 <TextInput
-                  label="Email"
-                  type="email"
-                  icon={<MdAlternateEmail />}
-                  rightSectionWidth={1}
-                />
-                <input
-                  id="email"
-                  type="text"
-                  value={email} // session!.user!.email!
-                  disabled
-                />
-                <label htmlFor="firstName">First Name:</label>
-                <input
+                  label="First name"
                   id="firstName"
-                  type="text"
                   value={firstName.trim()}
                   onChange={(e) =>
                     setFirstName(
@@ -169,11 +153,10 @@ const Account: NextPage<SessionProps> = (props) => {
                   }
                   disabled={loading}
                 />
-                <label htmlFor="lastName">Last Name:</label>
-                <input
+                <TextInput
+                  label="Last name"
                   id="lastName"
-                  type="text"
-                  value={lastName}
+                  value={lastName.trim()}
                   onChange={(e) =>
                     setLastName(
                       capFirstLetter(removeWhitespace(e.target.value))
@@ -181,14 +164,14 @@ const Account: NextPage<SessionProps> = (props) => {
                   }
                   disabled={loading}
                 />
-                <button disabled={loading} type="submit">
-                  {loading ? "Loading..." : "Update"}
-                </button>
+                <Button loading={loading} type="submit" mt="md">
+                  Update Profile
+                </Button>
               </form>
-              <p>{!loading && alert}</p>
             </Center>
           </Paper>
         </Center>
+       {hidden && <Notification onClose={() => setHidden(false)}>{alert}</Notification>}
       </div>
     );
   }
