@@ -200,12 +200,8 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
             label="Add a user"
             onChange={(e) => setUser(e.target.value)}
             value={user}
-            onKeyDown={(e) => {
-              e.key != "Enter";
-              return false;
-            }}
           />
-          {added && <Button mt={5}>Add user</Button>}
+          {added && <Button mt={5} type="submit">Add user</Button>}
         </form>
         {user != "" && autocomplete.length === 0 && (
           <Text size="md" mt="xs">
