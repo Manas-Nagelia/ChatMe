@@ -111,7 +111,7 @@ const GetStarted: NextPage<any> = (props) => {
   if (redirecting) return <Redirecting />;
   else {
     return (
-      <Paper mt="xs" ml="sm">
+      <Paper mt={120} ml={150}>
         <Title
           my="lg"
           sx={(theme: MantineTheme) => ({

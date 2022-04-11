@@ -71,10 +71,11 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
           .select()
           .eq("id", connectionData[i].connection_to)
           .single();
-        
+
+          console.log(connectionData[i].connection_to);
+
         if (!error) setNames((prevState: any) => [...prevState, data]);
         else console.log(error);
-
       }
       return names;
     };
@@ -188,7 +189,7 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
       <Navbar.Section>
         <form
           autoComplete="off"
-          onSubmit={(e) => {
+          onSubmit={(e: FormEvent<HTMLFormElement>) => {
             e.preventDefault();
             addUser();
             setUser("");
@@ -199,12 +200,12 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
             label="Add a user"
             onChange={(e) => setUser(e.target.value)}
             value={user}
+            onKeyDown={(e) => {
+              e.key != "Enter";
+              return false;
+            }}
           />
-          {added && (
-            <Button type="submit" mt={5}>
-              Add user
-            </Button>
-          )}
+          {added && <Button mt={5}>Add user</Button>}
         </form>
         {user != "" && autocomplete.length === 0 && (
           <Text size="md" mt="xs">

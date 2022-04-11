@@ -7,20 +7,39 @@ import {
   Center,
   Text,
   TextInput,
+  Paper,
+  createStyles,
+  MantineTheme,
+  ScrollArea,
 } from "@mantine/core";
 import Links from "./Sidebar";
 import MainHeader from "./Header";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
 import { useRealtime } from "react-supabase";
 import { useRouter } from "next/router";
 import { Message } from "../interfaces/Message";
 
-const Sidebar: NextPage = () => {
+const useStyles = createStyles((theme: MantineTheme) => ({
+  chatContainer: {
+    backgroundColor: theme.colors.brand[6],
+    padding: theme.spacing.xs,
+    borderRadius: theme.spacing.lg,
+    maxWidth: "30%",
+    color: "white",
+  },
+}));
+const Chats: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+
+  const { classes } = useStyles();
+
+  const bottom = useCallback((node: any) => {
+    if (node !== null) node.scrollIntoView();
+  }, []);
 
   const [{ data, error }] = useRealtime("messages", {
     select: {
@@ -73,17 +92,22 @@ const Sidebar: NextPage = () => {
         navbar={<Links width={{ base: 300 }} height={500} padding="md" />}
         header={<MainHeader height={70} padding="xs" />}
       >
-        {messageData ? (
-          messageData.map((msg: Message) => (
-            <div key={msg.id}>
-              <Text mb="md">
-                <b>{msg.name}</b>: {msg.message}
-              </Text>
-            </div>
-          ))
-        ) : (
-          <Text mb="md">Select a person to chat to</Text>
-        )}
+        <ScrollArea style={{ height: 410 }}>
+          {messageData ? (
+            messageData.map((msg: Message) => (
+              <>
+                <Paper key={msg.id} className={classes.chatContainer} mt="md" ml={msg.msg_from == supabase.auth.user()!.id ? "auto" : undefined} mr={50}>
+                  <Text mb="md" align="left" sx={{ wordWrap: "break-word" }}>
+                    {msg.message}
+                  </Text>
+                </Paper>
+                <div ref={bottom}></div>
+              </>
+            ))
+          ) : (
+            <Text mb="md">Select a person to chat to</Text>
+          )}
+        </ScrollArea>
         {messageData && (
           <form
             onSubmit={(e) => {
@@ -91,6 +115,7 @@ const Sidebar: NextPage = () => {
               sendMessage();
             }}
             autoComplete="off"
+            style={{ marginTop: "1.5em" }}
           >
             <Textarea
               placeholder="Your message"
@@ -129,4 +154,4 @@ const Sidebar: NextPage = () => {
   }
 };
 
-export default Sidebar;
+export default Chats;
