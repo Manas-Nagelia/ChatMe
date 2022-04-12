@@ -17,19 +17,32 @@ const ConnectionUI: NextPage<ConnectionProps> = (props) => {
       {props.names &&
         props.names.length > 0 &&
         props.names.map((name: NameObject) => (
-          <Navbar.Section key={name.id} mt="md" onClick={() => {(id !== name.id) ? router.push(`/chats/${name.id}`) : null}}>
+          <Navbar.Section
+            key={name.id}
+            mt="md"
+            onClick={() => {
+              id !== name.id ? router.push(`/chats/${name.id}`) : null;
+            }}
+          >
             <Group
               sx={(theme) => ({
                 backgroundColor:
                   id === name.id ? theme.colors.brand[6] : "white",
-                border: id !== name.id ? `0.5px solid ${theme.colors.gray[9]}` : "none",
+                border:
+                  id !== name.id
+                    ? `0.5px solid ${theme.colors.gray[9]}`
+                    : "none",
                 cursor: "pointer",
                 padding: theme.spacing.xs,
                 borderRadius: 5,
                 transition: "all 200ms ease-in-out",
-                ":hover": { border: `0.5px solid ${theme.colors.brand[6]}`, transition: "all 200ms ease-in-out" },
+                ":hover": {
+                  border: `0.5px solid ${theme.colors.brand[6]}`,
+                  transition: "all 200ms ease-in-out",
+                },
               })}
               spacing="sm"
+              align="center"
             >
               <UserAvatar id={name.id} size={35} />
               <Text

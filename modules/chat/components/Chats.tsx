@@ -12,6 +12,9 @@ import {
   MantineTheme,
   ScrollArea,
   Avatar,
+  Title,
+  Menu,
+  Group,
 } from "@mantine/core";
 import Links from "./Sidebar";
 import MainHeader from "./Header";
@@ -20,10 +23,9 @@ import { supabase } from "../../../utils/db/supabaseClient";
 import { useRealtime } from "react-supabase";
 import { useRouter } from "next/router";
 import { Message } from "../interfaces/Message";
-import Arrow from "../../../public/Arrow.svg";
-import Image from "next/image";
-import AccountAvatar from "./AccountAvatar";
 import UserAvatar from "./UserAvatar";
+import { Profile } from "../../auth/interfaces/Profile";
+import { IoMdTrash } from "react-icons/io";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
   chatContainer: {
@@ -80,6 +82,23 @@ const Chats: NextPage = (props) => {
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [user, setUser] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (id) {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select()
+          .eq("id", id)
+          .single();
+
+        setUser(data);
+      }
+    };
+
+    fetchUser();
+  }, [id]);
 
   let userID: string;
 
@@ -136,7 +155,6 @@ const Chats: NextPage = (props) => {
     sendMessage();
   };
 
-  console.log(messageData);
   if (!loading) {
     return (
       <AppShell
@@ -144,7 +162,28 @@ const Chats: NextPage = (props) => {
         navbar={<Links width={{ base: 300 }} height={500} padding="md" />}
         header={<MainHeader height={70} padding="xs" />}
       >
-        {messageData && messageData.length === 0 && <Text>No messages, yet!</Text>}
+        {user && (
+          <Paper
+            mx={-16}
+            mr={-25}
+            sx={{
+              position: "sticky",
+              borderBottom: "1px solid #DEE2E6",
+              paddingLeft: "2%",
+              paddingBottom: "1%",
+            }}
+          >
+            <Group spacing={5} align="center">
+              <Title>{user && user.first_name + " " + user.last_name}</Title>
+              <Menu>
+                <Menu.Item icon={<IoMdTrash />} color="red">Delete contact</Menu.Item>
+              </Menu>
+            </Group>
+          </Paper>
+        )}
+        {messageData && messageData.length === 0 && (
+          <Text>No messages, yet!</Text>
+        )}
         {messageData && messageData.length > 0 && (
           <ScrollArea style={{ height: 410 }}>
             {messageData &&

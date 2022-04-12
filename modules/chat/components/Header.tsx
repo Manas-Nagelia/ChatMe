@@ -14,7 +14,7 @@ const MainHeader: NextPage<any> = (props: Omit<HeaderProps, "children">) => {
     <Header {...props}>
       <Group sx={{ height: "100%" }} position="apart">
         <Title>Your chats</Title>
-        <AccountAvatar />
+        <AccountAvatar size={45} />
       </Group>
     </Header>
   );
