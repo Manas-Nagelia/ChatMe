@@ -30,7 +30,7 @@ const Account: NextPage<SessionProps> = (props) => {
   const [email, setEmail] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [alert, setAlert] = useState("");
-  const [hidden, setHidden] = useState(true);
+  const [shown, setShown] = useState(false);
  
   const router = useRouter();
 
@@ -78,10 +78,10 @@ const Account: NextPage<SessionProps> = (props) => {
   ) => {
     if (e) e.preventDefault();
     if (checkIfEmpty(firstName)) {
-      setHidden(false);
+      setShown(false);
       return setAlert("Please fill in your first name");
     } else if (checkIfEmpty(lastName)) {
-      setHidden(false);
+      setShown(false);
       return setAlert("Please fill in your last name");
     }
 
@@ -104,7 +104,7 @@ const Account: NextPage<SessionProps> = (props) => {
       console.log(err);
     } finally {
       setLoading(false);
-      setHidden(true);
+      setShown(true);
       setAlert("Profile updated!");
     }
   };
@@ -171,7 +171,7 @@ const Account: NextPage<SessionProps> = (props) => {
             </Center>
           </Paper>
         </Center>
-       {hidden && <Notification onClose={() => setHidden(false)}>{alert}</Notification>}
+       {shown && <Notification onClose={() => setShown(false)}>{alert}</Notification>}
       </div>
     );
   }

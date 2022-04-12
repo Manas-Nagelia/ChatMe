@@ -50,8 +50,8 @@ const UserAvatar: NextPage<Props> = (props) => {
       ) : (
         <Paper
           sx={(theme: MantineTheme) => ({
-            height: 45,
-            width: 45,
+            height: props.size,
+            width: props.size,
             backgroundColor: theme.colors.gray[3],
             borderRadius: "100%",
           })}

@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 import Links from "./Sidebar";
 import MainHeader from "./Header";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
 import { useRealtime } from "react-supabase";
 import { useRouter } from "next/router";
@@ -75,11 +75,17 @@ const useStyles = createStyles((theme: MantineTheme) => ({
     right: 335,
   },
 }));
-const Chats: NextPage = () => {
+const Chats: NextPage = (props) => {
   const router = useRouter();
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  
+  let userID: string;
+
+  if (supabase.auth.user()) {
+    userID = supabase.auth.user()!.id;
+  }
 
   const { classes } = useStyles();
 
@@ -101,11 +107,11 @@ const Chats: NextPage = () => {
     const { data: profilesData, error: profilesError } = await supabase
       .from("profiles")
       .select()
-      .eq("id", supabase.auth.user()!.id)
+      .eq("id", userID)
       .single();
     const { data, error } = await supabase.from("messages").insert([
       {
-        msg_from: supabase.auth.user()!.id,
+        msg_from: userID,
         message: message,
         msg_to: id, // TODO get this value based on who you're talking to
         name: profilesData!.first_name + " " + profilesData!.last_name,
@@ -120,9 +126,8 @@ const Chats: NextPage = () => {
   if (data && id) {
     messageData = data.filter(
       (message) =>
-        (message.msg_to === id &&
-          message.msg_from === supabase.auth.user()!.id) ||
-        (message.msg_from === id && message.msg_to === supabase.auth.user()!.id)
+        (message.msg_to === id && message.msg_from === userID) ||
+        (message.msg_from === id && message.msg_to === userID)
     );
   }
 
@@ -146,7 +151,7 @@ const Chats: NextPage = () => {
                   key={msg.id}
                   className={classes.chatContainer}
                   mt="md"
-                  ml={msg.msg_from == supabase.auth.user()!.id ? "auto" : 50}
+                  ml={msg.msg_from == userID ? "auto" : 50}
                   mr={60}
                 >
                   <Text mb="md" align="left" sx={{ wordWrap: "break-word" }}>
@@ -154,15 +159,23 @@ const Chats: NextPage = () => {
                   </Text>
                   <Paper
                     className={
-                      msg.msg_to == supabase.auth.user()!.id
+                      msg.msg_to == userID
                         ? classes.chatArrowContainerMe
                         : classes.chatArrowContainerYou
                     }
                   ></Paper>
-                  <Paper className={msg.msg_to == supabase.auth.user()!.id
+                  <Paper
+                    className={
+                      msg.msg_to == userID
                         ? classes.avatarMe
-                        : classes.avatarYou}>
-                    {msg.msg_from == supabase.auth.user()!.id ? <UserAvatar size={30} /> : <UserAvatar size={30} id={msg.msg_from} />}
+                        : classes.avatarYou
+                    }
+                  >
+                    {msg.msg_from == userID ? (
+                      <UserAvatar size={30} />
+                    ) : (
+                      <UserAvatar size={30} id={msg.msg_from} />
+                    )}
                   </Paper>
                 </Paper>
                 <div ref={bottom}></div>
