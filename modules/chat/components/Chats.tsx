@@ -19,14 +19,45 @@ import { supabase } from "../../../utils/db/supabaseClient";
 import { useRealtime } from "react-supabase";
 import { useRouter } from "next/router";
 import { Message } from "../interfaces/Message";
+import Arrow from "../../../public/Arrow.svg";
+import Image from "next/image";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
   chatContainer: {
+    position: "relative",
     backgroundColor: theme.colors.brand[6],
     padding: theme.spacing.xs,
     borderRadius: theme.spacing.lg,
     maxWidth: "30%",
     color: "white",
+  },
+  chatArrowContainerYou: {
+    position: "absolute",
+    bottom: -25,
+    right: -36,
+    backgroundColor: "transparent",
+    backgroundImage: "url(/Arrow.svg)",
+    backgroundRepeat: "no-repeat",
+    width: 70,
+    height: 50,
+  },
+  chatArrowContainerMe: {
+    position: "absolute",
+    bottom: -25,
+    right: 293,
+    backgroundColor: "transparent",
+    backgroundImage: "url(/Arrow.svg)",
+    transform: "scaleX(-1)",
+    WebkitTransform: "scaleX(-1)",
+    backgroundRepeat: "no-repeat",
+    width: 70,
+    height: 50,
+  },
+  chatArrow: {
+    userSelect: "none",
+    MozUserSelect: "none",
+    webkitUserSelect: "none",
+    msUserSelect: "none",
   },
 }));
 const Chats: NextPage = () => {
@@ -96,10 +127,22 @@ const Chats: NextPage = () => {
           {messageData ? (
             messageData.map((msg: Message) => (
               <>
-                <Paper key={msg.id} className={classes.chatContainer} mt="md" ml={msg.msg_from == supabase.auth.user()!.id ? "auto" : undefined} mr={50}>
+                <Paper
+                  key={msg.id}
+                  className={classes.chatContainer}
+                  mt="md"
+                  ml={
+                    msg.msg_from == supabase.auth.user()!.id
+                      ? "auto"
+                      : 10
+                  }
+                  mr={50}
+                >
                   <Text mb="md" align="left" sx={{ wordWrap: "break-word" }}>
                     {msg.message}
                   </Text>
+                  <Paper className={msg.msg_to == supabase.auth.user()!.id ? classes.chatArrowContainerMe : classes.chatArrowContainerYou}>
+                  </Paper>
                 </Paper>
                 <div ref={bottom}></div>
               </>

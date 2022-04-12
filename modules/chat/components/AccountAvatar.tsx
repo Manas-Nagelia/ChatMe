@@ -38,7 +38,7 @@ const AccountAvatar: NextPage<Props> = (props) => {
       setAvatarPath(url);
     };
 
-    getAvatarUrl();
+    if (supabase.auth.user()) getAvatarUrl();
     if (avatarUrl) downloadImage(avatarUrl);
   }, [avatarUrl]);
 
