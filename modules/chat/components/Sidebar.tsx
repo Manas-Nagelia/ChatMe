@@ -72,8 +72,6 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
           .eq("id", connectionData[i].connection_to)
           .single();
 
-          console.log(connectionData[i].connection_to);
-
         if (!error) setNames((prevState: any) => [...prevState, data]);
         else console.log(error);
       }

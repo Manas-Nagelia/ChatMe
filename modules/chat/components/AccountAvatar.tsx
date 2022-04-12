@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 interface Props {
   ml?: "xs" | "sm" | "md" | "lg" | "xl";
   mr?: "xs" | "sm" | "md" | "lg" | "xl";
+  size: number;
 }
 const AccountAvatar: NextPage<Props> = (props) => {
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -17,7 +18,8 @@ const AccountAvatar: NextPage<Props> = (props) => {
 
   useEffect(() => {
     const getAvatarUrl = async () => {
-      const userID = supabase.auth.user()!.id;
+      let userID: string = supabase.auth.user()!.id;
+
       const { data, error } = await supabase
         .from("profiles")
         .select()
@@ -47,7 +49,12 @@ const AccountAvatar: NextPage<Props> = (props) => {
       <Menu
         control={
           avatarUrl ? (
-            <Avatar src={avatarPath} radius="xl" alt="Avatar" size={45} />
+            <Avatar
+              src={avatarPath}
+              radius="xl"
+              alt="Avatar"
+              size={props.size}
+            />
           ) : (
             <Paper
               sx={(theme: MantineTheme) => ({

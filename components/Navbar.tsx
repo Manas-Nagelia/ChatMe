@@ -40,7 +40,7 @@ const Navbar: NextPage<Props> = (props) => {
       >
         <Logo />
         {props.session ? (
-          <AccountAvatar />
+          <AccountAvatar size={45} />
         ) : (
           null
         )}
