@@ -80,7 +80,7 @@ const Chats: NextPage = (props) => {
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
-  
+
   let userID: string;
 
   if (supabase.auth.user()) {
@@ -136,6 +136,7 @@ const Chats: NextPage = (props) => {
     sendMessage();
   };
 
+  console.log(messageData);
   if (!loading) {
     return (
       <AppShell
@@ -143,48 +144,50 @@ const Chats: NextPage = (props) => {
         navbar={<Links width={{ base: 300 }} height={500} padding="md" />}
         header={<MainHeader height={70} padding="xs" />}
       >
-        <ScrollArea style={{ height: 410 }}>
-          {messageData ? (
-            messageData.map((msg: Message) => (
-              <>
-                <Paper
-                  key={msg.id}
-                  className={classes.chatContainer}
-                  mt="md"
-                  ml={msg.msg_from == userID ? "auto" : 50}
-                  mr={60}
-                >
-                  <Text mb="md" align="left" sx={{ wordWrap: "break-word" }}>
-                    {msg.message}
-                  </Text>
+        {messageData && messageData.length === 0 && <Text>No messages, yet!</Text>}
+        {messageData && messageData.length > 0 && (
+          <ScrollArea style={{ height: 410 }}>
+            {messageData &&
+              messageData.length > 0 &&
+              messageData.map((msg: Message) => (
+                <>
                   <Paper
-                    className={
-                      msg.msg_to == userID
-                        ? classes.chatArrowContainerMe
-                        : classes.chatArrowContainerYou
-                    }
-                  ></Paper>
-                  <Paper
-                    className={
-                      msg.msg_to == userID
-                        ? classes.avatarMe
-                        : classes.avatarYou
-                    }
+                    key={msg.id}
+                    className={classes.chatContainer}
+                    mt="md"
+                    ml={msg.msg_from == userID ? "auto" : 50}
+                    mr={60}
                   >
-                    {msg.msg_from == userID ? (
-                      <UserAvatar size={30} />
-                    ) : (
-                      <UserAvatar size={30} id={msg.msg_from} />
-                    )}
+                    <Text mb="md" align="left" sx={{ wordWrap: "break-word" }}>
+                      {msg.message}
+                    </Text>
+                    <Paper
+                      className={
+                        msg.msg_to == userID
+                          ? classes.chatArrowContainerMe
+                          : classes.chatArrowContainerYou
+                      }
+                    ></Paper>
+                    <Paper
+                      className={
+                        msg.msg_to == userID
+                          ? classes.avatarMe
+                          : classes.avatarYou
+                      }
+                    >
+                      {msg.msg_from == userID ? (
+                        <UserAvatar size={30} />
+                      ) : (
+                        <UserAvatar size={30} id={msg.msg_from} />
+                      )}
+                    </Paper>
                   </Paper>
-                </Paper>
-                <div ref={bottom}></div>
-              </>
-            ))
-          ) : (
-            <Text mb="md">Select a person to chat to</Text>
-          )}
-        </ScrollArea>
+                  <div ref={bottom}></div>
+                </>
+              ))}
+          </ScrollArea>
+        )}
+        {!messageData && <p>Choose a person to chat to</p>}
         {messageData && (
           <form
             onSubmit={(e) => {
