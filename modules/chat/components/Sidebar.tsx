@@ -1,9 +1,48 @@
 import { NextPage } from "next";
-import { Navbar, NavbarProps, TextInput, Button, Text } from "@mantine/core";
+import {
+  Navbar,
+  NavbarProps,
+  TextInput,
+  Button,
+  Text,
+  Group,
+  Paper,
+  createStyles,
+  MantineTheme,
+} from "@mantine/core";
 import { useState, useEffect, FormEvent } from "react";
 import { supabase } from "../../../utils/db/supabaseClient";
 import ConnectionUI from "./ConnectionUI";
+import UserAvatar from "./UserAvatar";
 
+const useStyles = createStyles((theme: MantineTheme, _params, getRef) => ({
+  autoText: {
+    color: "black",
+  },
+
+  autoContainer: {
+    border: `0.5px solid ${theme.colors.gray[9]}`,
+    borderTop: "none",
+    transition: "all 200ms ease-in-out",
+    [`&:hover`]: {
+      border: `0.5px solid ${theme.colors.brand[6]}`,
+      transition: "all 200ms ease-in-out",
+    },
+  },
+
+  subContainer: {
+    backgroundColor: "transparent",
+    cursor: "pointer",
+    transition: "all 200ms ease-in-out",
+    padding: theme.spacing.xs,
+    borderRadius: 5,
+
+    "&:hover": {
+      backgroundColor: theme.colors.gray[1],
+      transition: "all 200ms ease-in-out",
+    },
+  },
+}));
 const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
   const [user, setUser] = useState("");
   const [userId, setUserId] = useState("");
@@ -11,6 +50,8 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
   const [added, setAdded] = useState(false);
   const [connections, setConnections] = useState<any | null>(null);
   const [names, setNames] = useState<any[]>([]);
+
+  const { classes } = useStyles();
 
   useEffect(() => {
     async function filter(arr: any, callback: any) {
@@ -199,30 +240,43 @@ const Links: NextPage<any> = (props: Omit<NavbarProps, "children">) => {
             onChange={(e) => setUser(e.target.value)}
             value={user}
           />
-          {added && <Button mt={5} type="submit">Add user</Button>}
-        </form>
-        {user != "" && autocomplete.length === 0 && (
-          <Text size="md" mt="xs">
-            No user found with that name
-          </Text>
-        )}
-        {autocomplete && autocomplete.length > 0 && (
-          <ul>
-            {autocomplete.map((item: any) => (
-              <li key={item.id}>
-                <Text
-                  style={{ cursor: "pointer" }}
+          {user != "" && autocomplete.length === 0 && (
+            <Paper padding="sm" className={classes.autoContainer}>
+              <Text>
+                No user found with that name
+              </Text>
+            </Paper>
+          )}
+          {autocomplete && autocomplete.length > 0 && (
+            <Paper padding={7.5} className={classes.autoContainer}>
+              {autocomplete.map((item: any) => (
+                <Group
+                  key={item.id}
+                  className={classes.subContainer}
                   onClick={(e: FormEvent) => {
                     e.preventDefault();
                     setPerson(item.first_name + " " + item.last_name, item.id);
                   }}
+                  spacing="xs"
                 >
-                  {item.first_name + " " + item.last_name}
-                </Text>
-              </li>
-            ))}
-          </ul>
-        )}
+                  <UserAvatar id={item.id} size={30} />
+                  <Text
+                    color={"black"}
+                    weight="bold"
+                    className={classes.autoText}
+                  >
+                    {item.first_name + " " + item.last_name}
+                  </Text>
+                </Group>
+              ))}
+            </Paper>
+          )}
+          {added && (
+            <Button mt="xs" type="submit">
+              Add user
+            </Button>
+          )}
+        </form>
       </Navbar.Section>
       {names.length !== 0 && <ConnectionUI names={names} />}
     </Navbar>

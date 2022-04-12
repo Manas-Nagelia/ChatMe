@@ -17,18 +17,24 @@ const Chats: NextPage<SessionProps> = (props) => {
 
   useEffect(() => {
     const getProfile = async () => {
-      // setLoading(true);
-      const user = supabase.auth.user();
+      const { data: connectionData, error: connectionError } = await supabase.from("connections").select().eq("connection_to", id).single();
 
-      let { data, error, status } = await supabase
-        .from("profiles")
-        .select(`first_name, last_name, avatar_url`)
-        .eq("id", props.session.user?.id)
-        .single();
+      if (connectionData){
+        // setLoading(true);
+        const user = supabase.auth.user();
 
-      const queriedData: Profile = data;
+        let { data, error, status } = await supabase
+          .from("profiles")
+          .select(`first_name, last_name, avatar_url`)
+          .eq("id", props.session.user?.id)
+          .single();
+
+        const queriedData: Profile = data;
 
       if (!queriedData) router.push("/getStarted");
+      } else {
+        router.push("/");
+      }
     };
 
     const fetchName = async () => {
