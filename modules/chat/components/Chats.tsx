@@ -164,7 +164,7 @@ const Chats: NextPage = (props) => {
     const res = await fetch(`/api/delete?${params}`);
     console.log(res.status);
 
-    if (res.status === 200) {
+    if (res.status === 200 && status === 200) {
       router.push("/");
     }
   }
