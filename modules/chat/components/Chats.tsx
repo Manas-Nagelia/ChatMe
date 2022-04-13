@@ -80,6 +80,7 @@ const useStyles = createStyles((theme: MantineTheme) => ({
 const Chats: NextPage = (props) => {
   const router = useRouter();
   const { id } = router.query;
+  
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [user, setUser] = useState<Profile | null>(null);
@@ -155,6 +156,19 @@ const Chats: NextPage = (props) => {
     sendMessage();
   };
 
+  const deleteConnection = async () => {
+    const { data, error, status } = await supabase.from("connections").delete().eq("connection_to", id);
+
+    const query = id as string;
+    const params = new URLSearchParams({ query });
+    const res = await fetch(`/api/delete?${params}`);
+    console.log(res.status);
+
+    if (res.status === 200) {
+      router.push("/");
+    }
+  }
+
   if (!loading) {
     return (
       <AppShell
@@ -176,7 +190,7 @@ const Chats: NextPage = (props) => {
             <Group spacing={5} align="center">
               <Title>{user && user.first_name + " " + user.last_name}</Title>
               <Menu>
-                <Menu.Item icon={<IoMdTrash />} color="red">Delete contact</Menu.Item>
+                <Menu.Item icon={<IoMdTrash />} color="red" onClick={() => deleteConnection()}>Delete contact</Menu.Item>
               </Menu>
             </Group>
           </Paper>

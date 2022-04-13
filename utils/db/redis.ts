@@ -59,3 +59,32 @@ export const searchConnections = async (query: string) => {
 
   return connections;
 };
+
+interface Connection {
+  entityId: string;
+  connection_from: string;
+  to_email: string;
+  connection_to: string;
+}
+
+export const deleteConnection = async (query: string) => {
+  await connect();
+
+  if (query) {
+    const repository = client.fetchRepository(schema);
+    const connections = await repository
+      .search()
+      .where("connection_to")
+      .eq(query)
+      .return.all();
+
+    const data: any = connections;
+
+    if (data) {
+      const id = data[0].entityId;
+    
+      await repository.remove(id);
+    }
+  }
+
+};
