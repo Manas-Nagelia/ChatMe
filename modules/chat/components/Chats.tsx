@@ -240,7 +240,7 @@ const Chats: NextPage = (props) => {
               ))}
           </ScrollArea>
         )}
-        {!messageData && <p>Choose a person to chat to</p>}
+        {!messageData && <Text>Choose a person to chat to</Text>}
         {messageData && (
           <form
             onSubmit={(e) => {
